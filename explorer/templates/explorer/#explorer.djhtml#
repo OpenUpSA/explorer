@@ -1,0 +1,150 @@
+{% load static %}
+{% load leaflet_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8"/>
+	<script src="{% static 'explorer/js/jquery.js' %}"></script>
+	<script src="{% static 'explorer/js/semantic.min.js' %}"></script>
+	{% leaflet_js %}
+	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
+	<script defer src="{% static 'explorer/js/my.js' %}"></script>
+	{% leaflet_css %}
+	<link rel="stylesheet" href="{% static 'explorer/css/semantic.min.css' %}">
+	<style>
+
+	    .leaflet-container {  /* all maps */
+            width:  100%;
+            height: 100%;
+	    }
+
+	    #southafrica {
+		height: 100%;
+		width: 100%;
+	    }
+	</style>
+
+	
+    </head>
+    <body>
+	<main>
+	    <div class="ui menu">
+		<div class="header item">Explorer</div>
+		<div class="ui right menu">
+		    <a class="ui item">Admin</a>
+		    <a class="iu item">Logout</a>
+		</div>
+	    </div>
+	    <div class="ui grid">
+		<div class="three wide column">
+		    <div class="ui vertical menu">
+			<div class="ui secondary menu borderless">
+			    <a class="item active" data-tab="layers">
+				<i class="bars icon"></i>
+			    </a>
+			    <a class="item" data-tab="filters">
+				<i class="filter icon"></i>
+			    </a>
+			</div>
+			<div class="ui big list tab active" data-tab="layers" id="layers">
+			    <div class="header item">Layers</div>
+			    <div class="ui divider"></div>
+			    <div class="ui item"
+				 v-for="layer in layers"
+				 v-bind:key="layer">
+				[[layer]]
+			    </div>
+			    <div class="item">
+				<button v-on:click="fetchLayers" class="ui button">
+				    Add Layer
+				</button> 
+			    </div>
+			</div>
+			<div class="ui tab segment" data-tab="filters" id="filters">
+			    <div class="header item">Filters</div>
+			    <div class="ui list">
+				<div class="item" v-for="condition in conditions" v-bind:key="condition.name">
+				    <div class="right floated content">
+					<i class="trash icon"></i>
+				    </div>
+				    <div class="content">
+					[[condition.name]]
+				    </div>
+				</div>
+			    </div>
+			    <div class="ui divider"></div>
+			    <form class="ui form" style="display:none">
+				<div class="field">
+				    <label>Source</label>
+				    <select class="ui fluid dropdown" v-model="sourceSelected"></select>
+				</div>
+				<div class="field">
+				    <label>Column</label>
+				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onChange($event)'>
+					<option value="">Column</option>
+					<option v-for="col in columns" v-bind:value="col">[[col]]</option>
+				    </select>
+				</div>
+				<div class="field">
+				    <label>Value</label>
+				    <div class="ui fluid search selection dropdown">
+					<input type="hidden" name="columns">
+					<i class="dropdown icon"></i>
+					<div class="default text"></div>
+					<div class="menu">
+					    <div class="item" v-for="val in colvalues" v-bind:data-value="val">[[val]]</div>
+					</div>
+				    </div>
+				</div>
+				<div class="ui button" v-on:click="done">Done</div>
+			    </form>
+			    <div class="ui button" v-on:click="addCondition">Add Condition</div>
+			</div>
+			<div class="ui tab segment" data-tab="other">
+			    <div class="header item">Filter Conditions</div>
+			    <form class="ui form">
+				<div class="field">
+				    <label>Column</label>
+				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onChange($event)'>
+					<option value="">Column</option>
+					<option v-for="col in columns" v-bind:value="col">[[col]]</option>
+				    </select>
+				</div>
+				<div class="field">
+				    <label>Value</label>
+				    <div class="ui fluid search selection dropdown">
+					<input type="hidden" name="columns">
+					<i class="dropdown icon"></i>
+					<div class="default text"></div>
+					<div class="menu">
+					    <div class="item" v-for="val in colvalues" v-bind:data-value="val">[[val]]</div>
+					</div>
+				    </div>
+				</div>
+				<div class="ui button" v-on:click="done">Done</div>
+			    </form>
+			</div>
+		    </div>
+		</div>
+		   
+		</div>
+		<div class="thirteen wide column" v-bind:style id="osm-map">
+		    {% leaflet_map "southafrica" callback="window.map_init_basic" %}
+		</div>
+	    </div>
+	    <div class="ui modal">
+		<div class="header">Select a Dataset Layer</div>
+		<div class="content">
+		    <div class="ui massive list" id="datasetOptions">
+			<a class="item"
+			   v-for="dataset in datasets"
+			   v-bind:key="dataset.id"
+			   v-on:click="addToLayer(dataset)">
+			    [[dataset.name]]
+			</a>
+		    </div>
+		</div>
+	    </div>
+	</main>
+    </body>
+</html>
