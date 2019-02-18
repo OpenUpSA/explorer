@@ -75,6 +75,10 @@
 			    <div class="ui divider"></div>
 			    <form class="ui form" style="display:none">
 				<div class="field">
+				    <label>Source</label>
+				    <select class="ui fluid dropdown" v-model="sourceSelected"></select>
+				</div>
+				<div class="field">
 				    <label>Column</label>
 				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onChange($event)'>
 					<option value="">Column</option>
