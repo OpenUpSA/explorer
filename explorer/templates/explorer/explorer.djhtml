@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="{% static 'explorer/css/semantic.min.css' %}">
 	<style>
 
-	    .leaflet-container {  /* all maps */
+	    .leaflet-container {
             width:  100%;
             height: 100%;
 	    }
@@ -51,8 +51,9 @@
 			    <div class="ui divider"></div>
 			    <div class="ui item"
 				 v-for="layer in layers"
-				 v-bind:key="layer">
-				[[layer]]
+				 v-bind:key="layer.name">
+				<a v-bind:class="layerColour(layer)"></a>
+				[[layer.name]]
 			    </div>
 			    <div class="item">
 				<button v-on:click="fetchLayers" class="ui button">
@@ -60,29 +61,58 @@
 				</button> 
 			    </div>
 			</div>
-			<div class="ui tab segment" data-tab="filters" id="filters">
+			<div class="ui tab" data-tab="filters" id="filters">
 			    <div class="header item">Filters</div>
-			    <div class="ui list">
-				<div class="item" v-for="condition in conditions" v-bind:key="condition.name">
-				    <div class="right floated content">
-					<i class="trash icon"></i>
-				    </div>
-				    <div class="content">
+			    <div v-for="condition in conditions">
+				<form class="ui form" v-for="cond in condition.conditions">
+				    <a class="ui red ribbon label">
 					[[condition.name]]
+					<i class="trash alternate icon"></i>
+				    </a>
+				    <div class="field">
+					<label>Column</label>
+					<select class="ui fluid dropdown">
+					    <option value="cond.column">
+						[[cond.column]]
+					    </option>
+					</select>
 				    </div>
-				</div>
+				    <div class="field">
+					<label>Value</label>
+					<div class="ui fluid search selection dropdown">
+					    <input type="hidden" name="columns">
+					    <i class="dropdown icon"></i>
+					    <div class="default text"></div>
+					    <div class="menu">
+						<div class="item" data-value="cond.value">
+						    [[cond.value]]
+						</div>
+					    </div>
+					</div>
+				    </div>
+								</form>
+				<div class="ui divider"></div>
+			    </div>
+			    <div class="ui list">
 			    </div>
 			    <div class="ui divider"></div>
-			    <form class="ui form" style="display:none">
+			    <form class="ui form" v-bind:style="{display:displayMenu}">
 				<div class="field">
-				    <label>Source</label>
-				    <select class="ui fluid dropdown" v-model="sourceSelected"></select>
+				    <label>Data Source</label>
+				    <select class="ui fluid dropdown" v-model="sourceSelected" v-on:change="onSelectedSource">
+					<option value="">Data Source</option>
+					<option v-for="source in sources" v-bind:value="source">
+					    [[source]]
+					</option>
+				    </select>
 				</div>
 				<div class="field">
 				    <label>Column</label>
-				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onChange($event)'>
+				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onSelectedColumn'>
 					<option value="">Column</option>
-					<option v-for="col in columns" v-bind:value="col">[[col]]</option>
+					<option v-for="col in currentColumns" v-bind:value="col">
+					    [[col]]
+					</option>
 				    </select>
 				</div>
 				<div class="field">
@@ -92,7 +122,10 @@
 					<i class="dropdown icon"></i>
 					<div class="default text"></div>
 					<div class="menu">
-					    <div class="item" v-for="val in colvalues" v-bind:data-value="val">[[val]]</div>
+					    <div class="item" v-for="val in currentValues"
+						 v-bind:data-value="val">
+						[[val]]
+					    </div>
 					</div>
 				    </div>
 				</div>
@@ -100,36 +133,11 @@
 			    </form>
 			    <div class="ui button" v-on:click="addCondition">Add Condition</div>
 			</div>
-			<div class="ui tab segment" data-tab="other">
-			    <div class="header item">Filter Conditions</div>
-			    <form class="ui form">
-				<div class="field">
-				    <label>Column</label>
-				    <select class="ui fluid dropdown" v-model="columnSelected" v-on:change='onChange($event)'>
-					<option value="">Column</option>
-					<option v-for="col in columns" v-bind:value="col">[[col]]</option>
-				    </select>
-				</div>
-				<div class="field">
-				    <label>Value</label>
-				    <div class="ui fluid search selection dropdown">
-					<input type="hidden" name="columns">
-					<i class="dropdown icon"></i>
-					<div class="default text"></div>
-					<div class="menu">
-					    <div class="item" v-for="val in colvalues" v-bind:data-value="val">[[val]]</div>
-					</div>
-				    </div>
-				</div>
-				<div class="ui button" v-on:click="done">Done</div>
-			    </form>
-			</div>
 		    </div>
 		</div>
 		   
 		</div>
 		<div class="thirteen wide column" v-bind:style id="osm-map">
-		    {% leaflet_map "southafrica" callback="window.map_init_basic" %}
 		</div>
 	    </div>
 	    <div class="ui modal">
