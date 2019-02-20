@@ -4,13 +4,6 @@ function getRandomColor() {
 		   'brown', 'grey', 'black'];
     var colorIndex = Math.floor(Math.random() * ((colours.length -1) - 0 + 1)) + 0;
     return colours[colorIndex];
-    
-  // var letters = '0123456789ABCDEF';
-  // var color = '#';
-  // for (var i = 0; i < 6; i++) {
-  //   color += letters[Math.floor(Math.random() * 16)];
-  // }
-  // return color;
 }
 
 var samap = new Vue({
@@ -58,7 +51,7 @@ var datasetOptions = new Vue({
 	    filters.columns.push(layerColumns);
 	    filters.sources.push(data.name);
 	    var geoDetail = {"name": data.name, 'geo':data.data, 'colour':colour};
-	    samap.geo.push(geoDetail);
+	    //samap.geo.push(geoDetail);
 	    layers.layers.push({'name': data.name, 'colour': colour});
 	    $('.ui.modal').modal('hide');
 	},
@@ -66,15 +59,6 @@ var datasetOptions = new Vue({
 });
 
 
-Vue.component('layer-list',{
-    props:['layers'],
-    template:`<div class="ui item"
-				 v-for="layer in layers"
-				 v-bind:key="layer.name">
-				<a v-bind:class="ui, layer.colour, empty circular label"></a>
-				[[layer.name]]
-			    </div>`
-});
 
 //show the choosen datasets
 var layers = new Vue({
@@ -113,7 +97,7 @@ var filters = new Vue({
 	conditions:[],
 	columns: [],
 	sources: [],
-	sourceSelected:'Hello',
+	sourceSelected:'',
 	columnSelected:'',
 	valueSelected:'',
 	currentColumns: [],
@@ -122,6 +106,7 @@ var filters = new Vue({
     methods:{
 	done: function(){
 	    console.log('Saving the new filter');
+	    console.log(this.valueSelected);
 	    for (var i =0;i <= this.conditions.length;i++){
 		if (this.conditions[i].name == this.sourceSelected){
 		    this.conditions[i].conditions.push({

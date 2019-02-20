@@ -52,8 +52,11 @@
 			    <div class="ui item"
 				 v-for="layer in layers"
 				 v-bind:key="layer.name">
-				<a v-bind:class="layerColour(layer)"></a>
-				[[layer.name]]
+				<span>
+				    [[layer.name]] <span v-bind:class="layerColour(layer)"></span>
+				</span>
+				
+				
 			    </div>
 			    <div class="item">
 				<button v-on:click="fetchLayers" class="ui button">
@@ -65,10 +68,10 @@
 			    <div class="header item">Filters</div>
 			    <div v-for="condition in conditions">
 				<form class="ui form" v-for="cond in condition.conditions">
-				    <a class="ui red ribbon label">
+				    <span class="ui red ribbon label">
 					[[condition.name]]
-					<i class="trash alternate icon"></i>
-				    </a>
+				    </span>
+				    <i class="righ aligned trash alternate icon"></i>
 				    <div class="field">
 					<label>Column</label>
 					<select class="ui fluid dropdown">
@@ -80,22 +83,19 @@
 				    <div class="field">
 					<label>Value</label>
 					<div class="ui fluid search selection dropdown">
-					    <input type="hidden" name="columns">
+					    <input type="text">
 					    <i class="dropdown icon"></i>
-					    <div class="default text"></div>
+					    <div class="default text">[[cond.value]]</div>
 					    <div class="menu">
 						<div class="item" data-value="cond.value">
 						    [[cond.value]]
 						</div>
 					    </div>
 					</div>
-				    </div>
-								</form>
-				<div class="ui divider"></div>
+																    </div>
+				    <div class="ui divider"></div>
+				</form>
 			    </div>
-			    <div class="ui list">
-			    </div>
-			    <div class="ui divider"></div>
 			    <form class="ui form" v-bind:style="{display:displayMenu}">
 				<div class="field">
 				    <label>Data Source</label>
@@ -117,8 +117,9 @@
 				</div>
 				<div class="field">
 				    <label>Value</label>
+				    <p>[[valueSelected]]</p>
 				    <div class="ui fluid search selection dropdown">
-					<input type="hidden" name="columns">
+					<input v-model="valueSelected">
 					<i class="dropdown icon"></i>
 					<div class="default text"></div>
 					<div class="menu">
