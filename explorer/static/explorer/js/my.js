@@ -13,6 +13,17 @@ var samap = new Vue({
 	geo: [],
 	map: '',
     },
+    methods: {
+	removeLayer: function(tagName){
+	    console.log("Removing Map from Layer");
+	    var self = this;
+	    this.map.eachLayer(function(layer){
+		if (layer.myTag == tagName){
+		    self.map.removeLayer(layer);
+		}
+	    });
+	}
+    },
     watch:{
 	geo: function(){
 	    console.log('Plotting points on the map');
@@ -22,6 +33,23 @@ var samap = new Vue({
 	    	var myRenderer = L.canvas({ padding: 0.1 });
 		var self = this;
 	    	L.geoJSON(this.geo[i].geo,{
+		    filter: function(feature){
+			// get the conditions for the geo.
+			for(var i=0; i < filters.conditions.length;i++){
+			    if(filters.conditions[i].name == self.geo[i].name){
+				for(var k=0;k< filters.conditions[i].conditions.length;k++){
+				    var column = filters.conditions[i].conditions[i].column;
+				    var value = filters.conditions[i].conditions[i].value;
+				    if (feature.properties[column] == value){
+					continue;
+				    }
+				}
+			    }
+			}
+		    },
+		    onEachFeature:function(feature, layer){
+			layer.myTag = self.geo[i].name;
+		    },
 	    	    pointToLayer: function(feature,latlng){
 	    		return L.circleMarker(latlng,{
 	    		    renderer: myRenderer,
@@ -70,32 +98,39 @@ var layers = new Vue({
     methods:{
 	fetchLayers: function(){
 	    $('.ui.modal').modal('show');
-	    $.ajax({
-		dataType:"json",
-		url: "/api/v1/datasets",
-		method: "GET",
-		success: function(data){
-		    datasetOptions.datasets = data;
-		},
-		error: function(error){
-		    console.log("We cant find anything here");
-		}
-	    });
+	    if (datasetOptions.datasets.length == 0){
+		$.ajax({
+		    dataType:"json",
+		    url: "/api/v1/datasets",
+		    method: "GET",
+		    success: function(data){
+			datasetOptions.datasets = data;
+		    },
+		    error: function(error){
+			console.log("We cant find anything here");
+		    }
+		});
+	    }
 	},
 	layerColour(layer){
 	    return 'ui ' + layer.colour +' empty circular label'; 
 	},
 	removeLayer(layer){
 	    console.log("Removing the layer, and also remove it from the map");
-	    for(var i=0; i < this.layer.length; i++){
+	    // We also need to remove the filters as well.
+	    for(var i=0; i < this.layers.length; i++){
 		if (this.layers[i].name == layer.name){
 		    this.layers.splice(i,1);
-		    for (k=0; k < samap.geo.length; k++){
-			if (samap.geo[i].name == layer.name){
-			    samap.geo.splice(k,1);
-			    break;
-			}
-		    }
+		    console.log('Remove layer.....');
+		    break;
+		}
+	    }
+	    console.log("removing layer from map");
+	    samap.removeLayer(layer.name);
+	    for (var k=0; k < samap.geo.length; k++){
+		if (samap.geo[i].name == layer.name){
+		    console.log("Found matching geojson,removing... ");
+		    samap.geo.splice(k,1);
 		    break;
 		}
 	    }
