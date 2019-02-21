@@ -27,25 +27,27 @@ var samap = new Vue({
     watch:{
 	geo: function(){
 	    console.log('Plotting points on the map');
-	    console.log(this.geo.length);
 	    for (var i=0; i < this.geo.length; i++){
 	    	console.log('Plotting points');
 	    	var myRenderer = L.canvas({ padding: 0.1 });
 		var self = this;
+		var k = i;
 	    	L.geoJSON(this.geo[i].geo,{
 		    filter: function(feature){
-			// get the conditions for the geo.
-			for(var i=0; i < filters.conditions.length;i++){
-			    if(filters.conditions[i].name == self.geo[i].name){
-				for(var k=0;k< filters.conditions[i].conditions.length;k++){
-				    var column = filters.conditions[i].conditions[i].column;
-				    var value = filters.conditions[i].conditions[i].value;
-				    if (feature.properties[column] == value){
-					continue;
-				    }
-				}
+			// get the conditions for the particular geo
+			var geography = self.geo[k];
+			var conditions = filters.conditions[geography.name]["conditions"];
+			var satisfied = true;
+			for (var i=0; i < conditions.length; i++){
+			    if(feature.properties[conditions[i].column] == conditions[i].value){
+				satisfied = true;
+			    }else{
+				satisfied = false;
 			    }
+			    
 			}
+			console.log(satisfied);
+			return satisfied;
 		    },
 		    onEachFeature:function(feature, layer){
 			layer.myTag = self.geo[i].name;
@@ -53,7 +55,7 @@ var samap = new Vue({
 	    	    pointToLayer: function(feature,latlng){
 	    		return L.circleMarker(latlng,{
 	    		    renderer: myRenderer,
-	    		    radius:2,
+	    		    radius:4,
 			    color: self.geo[i].colour
 	    		});
 	    	    }
@@ -74,7 +76,10 @@ var datasetOptions = new Vue({
 	addToLayer: function(data){
 	    var colour = getRandomColor();
 	    var layerDetail = {"name": data.name, "conditions":[], 'colour':colour };
-	    filters.conditions.push(layerDetail);
+	    filters.conditions[data.name] = {
+		"conditions": [],
+		"colour":colour
+	    };
 	    var layerColumns = {"name": data.name, "columns": data.columns, 'colour':colour};
 	    filters.columns.push(layerColumns);
 	    filters.sources.push(data.name);
@@ -144,7 +149,7 @@ var filters = new Vue({
      delimiters: ["[[","]]"],
     data:{
 	displayMenu: 'none',
-	conditions:[],
+	conditions:{},
 	columns: [],
 	sources: [],
 	sourceSelected:'',
@@ -157,41 +162,32 @@ var filters = new Vue({
 	removeCondition:function(layer, index){
 	    console.log("removing condition from layer");
 	    console.log(index);
-	    for(var i = 0; i <= this.conditions.length; i++){
-		if (this.conditions[i].name == layer.name){
-		    this.conditions[i].conditions.splice(index,1);
-		    break;
-		}
-	    }
+	    this.conditions[layer.name].conditions.splice(index,1);
 	    // We need to update the geo paramerters
 	    
 	    
 	},
-	filterColour(condition){
+	filterColour(colour){
 	    console.log("The current colour for this is");
-	    console.log(condition);
-	    return 'ui '+ condition.colour +' ribbon label';
+	    console.log(colour);
+	    return 'ui '+ colour +' ribbon label';
 	},
 	done: function(){
 	    console.log('Saving the new filter');
 	    console.log(this.valueSelected);
-	    for (var i =0;i < this.conditions.length;i++){
-		if (this.conditions[i].name == this.sourceSelected){
-		    this.conditions[i].conditions.push({
-			"column": this.columnSelected,
+	    this.conditions[this.sourceSelected].conditions.push({
+		"column": this.columnSelected,
 			"value":this.valueSelected
-		    });
-		    console.log("entered new filter condition");
-		    break;
-		}
-	    }
+	    });
+	    console.log("entered new filter condition");
+	    samap.removeLayer(this.sourceSelected);
 	    this.sourceSelected = '';
 	    this.columnSelected = '';
 	    this.valueSelected = '';
 	    this.currentColumns = '';
 	    this.currentvalues = '';
 	    this.displayMenu = 'none';
-	    //we need to update the geo for this layer
+	    samap.geo.push();
 	},
 	addCondition: function(){
 	    this.displayMenu = 'block';

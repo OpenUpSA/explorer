@@ -63,12 +63,12 @@
 			</div>
 			<div class="ui tab" data-tab="filters" id="filters">
 			    <div class="header item">Filters</div>
-			    <div v-for="condition in conditions">
-				<form class="ui form" v-for="(cond, index) in condition.conditions">
-				    <span v-bind:class="filterColour(condition)">
-					[[condition.name]]
+			    <div v-for="(item,key, index) in conditions">
+				<form class="ui form" v-for="(cond, index) in item.conditions">
+				    <span v-bind:class="filterColour(item.colour)">
+					[[key]]
 				    </span>
-				    <i class="righ aligned trash alternate icon link" v-on:click="removeCondition(condition, index)"></i>
+				    <i class="righ aligned trash alternate icon link" v-on:click="removeCondition(key, index)"></i>
 				    <div class="field">
 					<label>Column</label>
 					<select class="ui fluid dropdown">
