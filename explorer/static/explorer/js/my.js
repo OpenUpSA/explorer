@@ -46,7 +46,6 @@ var samap = new Vue({
 			    }
 			    
 			}
-			console.log(satisfied);
 			return satisfied;
 		    },
 		    onEachFeature:function(feature, layer){
@@ -83,7 +82,7 @@ var datasetOptions = new Vue({
 	    var layerColumns = {"name": data.name, "columns": data.columns, 'colour':colour};
 	    filters.columns.push(layerColumns);
 	    filters.sources.push(data.name);
-	    tooltips.sources[data.name] = {columns: []};
+	    tooltips.headers[data.name] = {columns: Object.keys(data.columns)};
 	    var geoDetail = {"name": data.name, 'geo':data.data, 'colour':colour};
 	    samap.geo.push(geoDetail);
 	    layers.layers.push({'name': data.name, 'colour': colour});
@@ -146,8 +145,14 @@ var layers = new Vue({
 
 var tooltips = new Vue({
     el: '#tooltips',
+    delimiters: ["[[","]]"],
     data:{
-	source:{}
+	headers:{}
+    },
+    watch:{
+	headers: function(){
+	    console.log("headers updated");
+	}
     }
 });
 
