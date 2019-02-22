@@ -83,6 +83,7 @@ var datasetOptions = new Vue({
 	    var layerColumns = {"name": data.name, "columns": data.columns, 'colour':colour};
 	    filters.columns.push(layerColumns);
 	    filters.sources.push(data.name);
+	    tooltips.sources[data.name] = {columns: []};
 	    var geoDetail = {"name": data.name, 'geo':data.data, 'colour':colour};
 	    samap.geo.push(geoDetail);
 	    layers.layers.push({'name': data.name, 'colour': colour});
@@ -143,6 +144,12 @@ var layers = new Vue({
     }
 });
 
+var tooltips = new Vue({
+    el: '#tooltips',
+    data:{
+	source:{}
+    }
+});
 
 var filters = new Vue({
     el:'#filters',
@@ -221,133 +228,6 @@ var filters = new Vue({
     }
 });
 
-// var conditionFilterMenu = new Vue({
-//     el: '#filter-condition',
-//     delimiters: ["[[","]]"],
-//     data:{
-// 	showConditionMenu: 'none',
-// 	columns: [],
-// 	values: {},
-// 	colvalues: [],
-// 	columnSelected: '',
-// 	valueSelected: ''
-	
-//     },
-//     methods:{
-// 	onChange :function(event){
-// 	    // get all the values that correspond to the selected column
-// 	    this.colvalues = [];
-// 	    console.log("selected column is ");
-// 	    console.log(this.values[this.columnSelected]);
-// 	    this.colvalues = this.values[this.columnSelected];
-// 	},
-// 	done: function(){
-// 	    console.log("Saving and closing condition");
-// 	    for (var i =0; i < mainFilterMenu.filterLayer.length; i++){
-// 		if (mainFilterMenu.filterLayer[i].dataset == mainFilterMenu.currentFilter){
-// 		    mainFilterMenu.filterLayer[i].conditions[this.columnSelected] = this.valueSelected;
-// 		    mainFilterMenu.conditions.push(this.columnSelected);
-// 		    break;
-// 		}
-// 	    }
-// 	    // We need to add these conditions
-// 	    this.showConditionMenu = 'none';
-// 	} 
-//     }
-// });
-
-// var mainFilterMenu = new Vue({
-//     el: '#filter-menu',
-//     delimiters: ["[[","]]"],
-//     data: {
-// 	showFilterMenu: 'none',
-// 	filterLayer:[],
-// 	currentFilter: '',
-// 	conditions: []
-//     },
-//     methods: {
-// 	addCondition: function(){
-// 	    console.log("Adding new filter, first checking current dataaset");
-// 	    console.log(this.currentFilter);
-// 	    conditionFilterMenu.showConditionMenu = 'block';
-// 	    conditionFilterMenu.colvalues = [];
-// 	    for (var i=0; i < this.filterLayer.length; i++ ){
-// 	    	console.log("Lopping through filter layers to find the correct one");
-// 	    	if (this.filterLayer[i].dataset == this.currentFilter){
-// 	    	    console.log("populating the columns");
-// 	    	    conditionFilterMenu.columns = Object.keys(this.filterLayer[i].columns);
-// 		    conditionFilterMenu.values = this.filterLayer[i].columns;
-// 		    break;
-// 	    	}
-// 	    }
-// 	    //We need to collect all the possible values from the geojson dataset for each column
-// 	}
-//     }
-// });
-
-//Show all the filters for a particular dataset
-
-// Vue.component('layer-group', {
-//     props: ['dataset'],
-//     delimiters: ["[[","]]"],
-//     data: function(){
-// 	return {
-// 	    count: 1
-// 	};
-//     },
-//     template:`
-// <div>
-// <a class="ui item filter" v-on:click="showFilter">
-// [[dataset.name]] <i class="dropdown icon"></i>
-// </a>
-// </div>`,
-//     methods: {
-// 	showFilter(event){
-// 	    if (this.count == 1){
-// 		$('#osm-map').attr('class', 'six wide column');
-// 		mainFilterMenu.showFilterMenu = 'block';
-// 		if (mainFilterMenu.filterLayer.length == 0){
-// 		    console.log("Filter Conditions have not been created, creating a new one");
-// 		    // We have to collect all the values from all the columns
-// 		    mainFilterMenu.filterLayer.push({
-// 			"dataset": this.dataset.name,
-// 			"columns": this.dataset.columns,
-// 			"conditions": {}
-// 		    });
-// 		    mainFilterMenu.currentFilter = this.dataset.name;
-// 		    this.count = 2;
-// 		}else{
-// 		    console.log("There exists some FilterLayers, appending a new Filter Layer");
-// 		    // Check where a Filter already exists, if so, show the conditions
-// 		    mainFilterMenu.filterLayer.push({
-// 				"dataset": this.dataset.name,
-// 				"columns": this.dataset.columns,
-// 				"conditions": {}
-// 			    });
-// 		    mainFilterMenu.currentFilter = this.dataset.name;
-// 		    mainFilterMenu.conditions = [];
-// 		    // for (var i = 0; i < mainFilterMenu.filterLayer.lengh; i++){
-// 		    // 	if (mainFilterMenu.filterLayer[i].dataset == mainFilterMenu.currentFilter){
-// 		    // 	    mainFilterMenu.conditions = Object.keys(mainFilterMenu.filterLayer[i].conditions);
-// 		    // 	}else{
-// 		    // 	    mainFilterMenu.filterLayer.push({
-// 		    // 		"dataset": this.dataset.name,
-// 		    // 		"columns": this.dataset.columns,
-// 		    // 		"conditions": {}
-// 		    // 	    });
-// 		    // 	    mainFilterMenu.currentFilter = this.dataset.name;
-// 		    // 	}
-// 		    // }
-// 		    this.count = 2;
-// 		}
-// 	    }else if (this.count == 2){
-// 		mainFilterMenu.showFilterMenu = 'none';
-// 		$('#osm-map').attr('class', 'twelve wide column');
-// 		this.count = 1;
-// 	    }
-// 	}
-//     },
-//  });
 
 $('.ui.search.dropdown')
   .dropdown({
@@ -362,6 +242,9 @@ $('.menu .item')
   .tab()
 ;
 
+$('.popup.item')
+  .popup()
+;
 function map_init_basic (map, options) {
     samap.map = map;
 }

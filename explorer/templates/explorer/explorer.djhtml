@@ -32,13 +32,16 @@
 		<div class="three wide column">
 		    <div class="ui vertical menu">
 			<div class="ui secondary menu borderless">
-						    <a class="item active" data-tab="layers">
-							    <i class="bars icon"></i>
+			    <a class="popup item active" data-tab="layers" data-content="Dataset Layers">
+				<i class="bars icon"></i>
 			    </a>
-						    <a class="item" data-tab="filters">
-							    <i class="filter icon"></i>
+			    <a class="popup item" data-tab="filters" data-content="Layer Filters">
+				<i class="filter icon"></i>
 			    </a>
-						</div>
+			    <a class="popup item" data-tab="markers" data-content="Tooltips">
+				<i class="map marker icon"></i>
+			    </a>
+			</div>
 			<div class="ui big list tab active" data-tab="layers" id="layers">
 			    <div class="header item">Layers</div>
 			    <div class="ui divider"></div>
@@ -133,9 +136,27 @@
 				<div class="ui button" v-on:click="done">Done</div>
 			    </form>
 								    <div class="ui button" v-on:click="addCondition">Add Condition</div>
-						</div>
+									</div>
+			<div class="ui tab" data-tab="markers" id="tooltips">
+			    <div class="header item">Tooltips</div>
+			    <div class="ui divider"></div>
+			    <form class="ui form">
+				<div class="field">
+				    <label>Data Source</label>
+				    <select class="ui fluid dropdown">
+					<option value=""></option>
+				    </select>
+				</div>
+				<div class="field">
+				    <select name="columns" multiple="" class="ui fluid dropdown">
+					<option value=""></option>
+				    </select>
+				</div>
+			    </form>
+			    
+			</div>
 		    </div>
-						</div>
+		</div>
 		<div class="thirteen wide column" id="osm-map">
 		    {% leaflet_map "southafrica" callback="window.map_init_basic" %}
 		</div>
