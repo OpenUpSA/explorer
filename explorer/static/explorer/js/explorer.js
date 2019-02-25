@@ -148,6 +148,11 @@ var tooltips = new Vue({
     data:{
 	headers:{},
     },
+    watch:{
+	headers: function(){
+	    $('#multi-tooltip').dropdown();
+	}
+    }
 });
 
 var filters = new Vue({
@@ -233,13 +238,12 @@ $('.ui.search.dropdown')
     fullTextSearch: true
   });
 
-$('.ui.dropdown').dropdown();
 
 $('.menu .item').tab();
 
 $('.popup.item').popup();
 
-$('.ui.sidebar').sidebar('remove body CSS');
+$('.ui.sidebar').sidebar();
 
 function map_init_basic (map, options) {
     samap.map = map;
