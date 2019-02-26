@@ -131,14 +131,14 @@
 	    </div>
 	    <div class="ui tab" data-tab="tooltips" id="tooltips">
 		<div class="header item">Tooltips</div>
-		<form class="ui form" v-for="(items,key) in headers" v-bind:key="key">
+		<form class="ui form" v-for="(items,key) in headers" v-bind:id="key">
 		    <div class="field">
 			<label>[[key]]</label>
 			<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
 			    <input type="hidden"
 				   name="columns"
-				   v-model="tipSelected"
-				   v-on:change="tipSelected=$event.target.value">
+				   v-model="tipSelected[key]"
+				   v-on:change="tipSelected[key]=$event.target.value">
 			    <i class="dropdown icon"></i>
 			    <div class="default text">Select columns as tooltips</div>
 			    <div class="menu">
@@ -146,9 +146,9 @@
 			    </div>
 			</div>
 		    </div>
-		    <div class="ui blue basic button right aligned" v-on:click="done(key)">
+		    <div class="ui blue basic button right aligned" v-on:click="done(key)" v-bind:key="key">
 			<i class="check icon"></i>
-			Done
+			Update
 		    </div>
 		</form>
 	    </div>

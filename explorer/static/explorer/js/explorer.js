@@ -158,17 +158,24 @@ var tooltips = new Vue({
     data:{
 	headers:{},
 	tooltipSelection:{},
-	tipSelected: '',
+	tipSelected: {},
     },
     methods:{
 	done:function(layer){
 	    var count = Math.floor(Math.random() * ((100 -1) - 0 + 1)) + 0;
+	    var key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+	    console.log(key);
 	    console.log("saving tooltips");
-	    console.log(this.tipSelected);
-	    // if the tooltip is blank, we must default to only showing lat longs;
-	    this.$set(this.tooltipSelection, layer, this.tipSelected.split(","));
-	    console.log(samap.geo[layer].count);
-	    samap.geo[layer].count++;
+	    console.log(this.tipSelected[layer]);
+	    if (this.tipSelected[layer]){
+		this.$set(this.tooltipSelection, layer, this.tipSelected[layer].split(","));
+	    }else{
+		this.$set(this.tooltipSelection, layer, []);
+	    }
+	    this.$set(samap.geo, key, count);
+	    //console.log(samap.geo[layer]);
+	    //samap.geo[layer] = Object.assign({}, samap.geo[layer], {"count": count});
+	    //samap.geo[layer].count++;
 	},
     },
     watch:{
