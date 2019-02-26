@@ -40,23 +40,25 @@
 		<div class="header item">Layers</div>
 		<div class="ui divider"></div>
 		<div class="ui item"
-		     v-for="layer in layers"
-		     v-bind:key="layer.name">
+		     v-for="(item,key) in layers"
+		     v-bind:key="key">
 		    <span>
-			<span v-bind:class="layerColour(layer)"></span>
-			[[layer.name]]
+			<span v-bind:class="layerColour(item)"></span>
+			[[key]]
 			<i class="right aligned trash alternate icon link"
-			   v-on:click="removeLayer(layer)">
+			   v-on:click="removeLayer(key)">
 			</i>
 		    </span>
 		</div>
-		<button v-on:click="fetchLayers" class="ui black button right aligned">
+		<br>
+		<button v-on:click="fetchLayers" class="ui black basic button right aligned">
+		    <i class="plus icon"></i>
 		    Add Layer
 		</button>
 	    </div>
 	    <div class="ui tab" data-tab="filters" id="filters">
 		<div class="header item">Filters</div>
-		<div v-for="(item,key, index) in conditions">
+		<div v-for="(item,key) in conditions">
 		    <form class="ui form" v-for="(cond, index) in item.conditions">
 			<span v-bind:class="filterColour(item.colour)">
 			    [[key]]
@@ -133,21 +135,21 @@
 		    <div class="field">
 			<label>[[key]]</label>
 			<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
-			    <input type="hidden" name="columns">
+			    <input type="hidden"
+				   name="columns"
+				   v-model="tipSelected"
+				   v-on:change="tipSelected=$event.target.value">
 			    <i class="dropdown icon"></i>
 			    <div class="default text">Select columns as tooltips</div>
 			    <div class="menu">
 				<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
 			    </div>
 			</div>
-			<!-- <select multiple="" class="ui selection dropdown" id="multi-tooltip">
-			     <option value=""></option>
-			     <option v-for="col in items.columns" v-bind:value="col">
-			     [[col]]
-			     </option>
-			     </select> -->
 		    </div>
-		    <button class="ui primary button right aligned">Done</button>
+		    <div class="ui blue basic button right aligned" v-on:click="done(key)">
+			<i class="check icon"></i>
+			Done
+		    </div>
 		</form>
 	    </div>
 			</div>

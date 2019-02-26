@@ -10,7 +10,7 @@ var samap = new Vue({
     el: '#southafrica',
     delimiters: ["[[","]]"],
     data:{
-	geo: [],
+	geo: {},
 	map: '',
     },
     methods: {
@@ -27,17 +27,12 @@ var samap = new Vue({
     watch:{
 	geo: function(){
 	    console.log('Plotting points on the map');
-	    for (var i=0; i < this.geo.length; i++){
-	    	console.log('Plotting points');
-	    	var myRenderer = L.canvas({ padding: 0.1 });
-		var self = this;
-		var k = i;
-	    	L.geoJSON(this.geo[i].geo,{
+	    var renderer = L.canvas({padding: 0.1});
+	    for (const [key, value] of Object.entries(this.geo)){
+		L.geoJSON(value.geo,{
 		    filter: function(feature){
-			// get the conditions for the particular geo
-			var geography = self.geo[k];
-			var conditions = filters.conditions[geography.name]["conditions"];
 			var satisfied = true;
+			var conditions = filters.conditions[key].conditions;
 			for (var i=0; i < conditions.length; i++){
 			    if(feature.properties[conditions[i].column] == conditions[i].value){
 				satisfied = true;
@@ -49,16 +44,39 @@ var samap = new Vue({
 			return satisfied;
 		    },
 		    onEachFeature:function(feature, layer){
-			layer.myTag = self.geo[i].name;
+			layer.myTag = key;
+			var header  = '<h4><i class="bars icon"> Point</i></h4>';
+			var table = '<table class="table">';
+			if (key in tooltips.tooltipSelection){
+			    for (var i=0;i < tooltips.tooltipSelection[key].length; i++){
+				var columnName = tooltips.tooltipSelection[key];
+				var row = "<tr>"+
+				    "<td><b>" + columnName[i] + "</b></td>"+
+				    "<td>" + feature.properties[columnName[i]] + "</td>" +
+				    "</tr>";
+				table = table + row;
+			    }
+			    var endtable = '</table>';
+			    table = table + endtable;   
+			}
+			else{
+			    var longitude = feature.geometry.coordinates[0];
+			    var latitude = feature.geometry.coordinates[1];
+			    var lat = "<tr><td><b>Latitude</b></td><td>" + latitude + '</td></tr>';
+			    var lng = "<tr><td><b>Longitude</b></td><td>" + longitude + '</td></tr>';
+			    table = table + lat + lng;
+			}
+			header = header + table;
+			layer.bindTooltip(header).openTooltip();
 		    },
 	    	    pointToLayer: function(feature,latlng){
 	    		return L.circleMarker(latlng,{
-	    		    renderer: myRenderer,
+	    		    renderer: renderer,
 	    		    radius:4,
-			    color: self.geo[i].colour
+			    color: value.colour
 	    		});
 	    	    }
-	    	}).addTo(this.map);
+		}).addTo(this.map);
 	    }
 	}
     }
@@ -74,17 +92,15 @@ var datasetOptions = new Vue({
     methods:{
 	addToLayer: function(data){
 	    var colour = getRandomColor();
-	    filters.conditions[data.name] = {
-		"conditions": [],
-		"colour":colour
-	    };
-	    var layerColumns = {"name": data.name, "columns": data.columns, 'colour':colour};
-	    filters.columns.push(layerColumns);
+	    this.$set(filters.conditions, data.name, {"conditions":[], "colour": colour});
+	    this.$set(filters.columns, data.name, {"columns": data.columns, "colour": colour});
 	    filters.sources.push(data.name);
 	    this.$set(tooltips.headers, data.name, {"columns": Object.keys(data.columns)});
-	    var geoDetail = {"name": data.name, 'geo':data.data, 'colour':colour};
-	    samap.geo.push(geoDetail);
-	    layers.layers.push({'name': data.name, 'colour': colour});
+	    
+	    this.$set(samap.geo, data.name, {"geo": data.data,"colour": colour, "count": 0});
+	    
+	    this.$set(layers.layers, data.name, {"colour": colour});
+	    
 	    $('.ui.modal').modal('hide');
 	},
     }
@@ -97,7 +113,7 @@ var layers = new Vue({
     el: '#layers',
     delimiters: ["[[", "]]"],
     data:{
-	layers: []
+	layers: {}
     },
     methods:{
 	fetchLayers: function(){
@@ -119,25 +135,19 @@ var layers = new Vue({
 	layerColour(layer){
 	    return 'ui ' + layer.colour +' empty circular label'; 
 	},
-	removeLayer(layer){
-	    console.log("Removing the layer, and also remove it from the map");
-	    // We also need to remove the filters as well.
-	    for(var i=0; i < this.layers.length; i++){
-		if (this.layers[i].name == layer.name){
-		    this.layers.splice(i,1);
-		    console.log('Remove layer.....');
-		    break;
-		}
-	    }
-	    console.log("removing layer from map");
-	    samap.removeLayer(layer.name);
-	    for (var k=0; k < samap.geo.length; k++){
-		if (samap.geo[i].name == layer.name){
-		    console.log("Found matching geojson,removing... ");
-		    samap.geo.splice(k,1);
-		    break;
-		}
-	    }
+	removeLayer(name){
+	    console.log("Removing the layer");
+	    this.$delete(this.layers, name);
+	    
+	    console.log("Removing all the layer filters");
+	    this.$delete(filters.conditions, name);
+	    this.$delete(filters.columns,name);
+	    
+	    console.log("Removng the layer from the map");
+	    samap.removeLayer(name);
+
+	    console.log("removing from geo list");
+	    this.$delete(samap.geo, name);
 	}
     }
 });
@@ -147,14 +157,25 @@ var tooltips = new Vue({
     delimiters: ["[[","]]"],
     data:{
 	headers:{},
+	tooltipSelection:{},
+	tipSelected: '',
+    },
+    methods:{
+	done:function(layer){
+	    var count = Math.floor(Math.random() * ((100 -1) - 0 + 1)) + 0;
+	    console.log("saving tooltips");
+	    console.log(this.tipSelected);
+	    // if the tooltip is blank, we must default to only showing lat longs;
+	    this.$set(this.tooltipSelection, layer, this.tipSelected.split(","));
+	    console.log(samap.geo[layer].count);
+	    samap.geo[layer].count++;
+	},
     },
     watch:{
 	headers: function(){
-	    console.log("Lets rerun dropdown");
 	    setTimeout(() => {
 		$(".dropdown").dropdown();
 	    }, 0);
-	    //$('.ui.dropdown').dropdown('refresh', {on:'click'});
 	}
     }
 });
@@ -165,7 +186,7 @@ var filters = new Vue({
     data:{
 	displayMenu: 'none',
 	conditions:{},
-	columns: [],
+	columns: {},
 	sources: [],
 	sourceSelected:'',
 	columnSelected:'',
@@ -177,8 +198,12 @@ var filters = new Vue({
 	removeCondition:function(layer, index){
 	    console.log("removing condition from layer");
 	    console.log(index);
-	    this.conditions[layer.name].conditions.splice(index,1);
-	    // We need to update the geo paramerters
+	    this.conditions[layer].conditions.splice(index,1);
+	    // We need to update the map without this filter, retrigger geo
+	    // There must be a better way of doing this.
+	    this.$set(samap.geo, "filter", true);
+	    
+	    
 	    
 	    
 	},
@@ -190,9 +215,10 @@ var filters = new Vue({
 	done: function(){
 	    console.log('Saving the new filter');
 	    console.log(this.valueSelected);
+	    
 	    this.conditions[this.sourceSelected].conditions.push({
 		"column": this.columnSelected,
-			"value":this.valueSelected
+		"value":this.valueSelected
 	    });
 	    console.log("entered new filter condition");
 	    samap.removeLayer(this.sourceSelected);
@@ -202,7 +228,8 @@ var filters = new Vue({
 	    this.currentColumns = '';
 	    this.currentvalues = '';
 	    this.displayMenu = 'none';
-	    samap.geo.push();
+	    this.$set(samap.geo, "removed", true);
+	    //samap.geo['removed'] = true;
 	},
 	addCondition: function(){
 	    this.displayMenu = 'block';
@@ -211,27 +238,13 @@ var filters = new Vue({
 	    console.log("The selected data source is");
 	    console.log(this.sourceSelected);
 	    console.log('We need to populate the colums from this datasource');
-	    for (var k=0; k < this.columns.length;k++){
-		if (this.columns[k].name == this.sourceSelected){
-		    this.currentColumns = Object.keys(this.columns[k].columns);
-		    break;
-		}
-	    }
-	    
-	    
+	    this.currentColumns = Object.keys(this.columns[this.sourceSelected].columns);
 	},
 	onSelectedColumn: function(){
 	    console.log("The column has been selected");
 	    console.log(this.columnSelected);
 	    console.log("we need to get the values for this column");
-	    for (var i =0; i<= this.columns.length;i++){
-		if (this.columns[i].name == this.sourceSelected){
-		    console.log("Found the guy");
-		    this.currentValues = this.columns[i].columns[this.columnSelected];
-		    break;
-		}
-	    }
-	    
+	    this.currentValues = this.columns[this.sourceSelected].columns[this.columnSelected];	    
 	},
     }
 });
