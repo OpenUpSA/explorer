@@ -4,13 +4,14 @@
 <html lang="en">
     <head>
 	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="{% static 'explorer/css/semantic.min.css' %}">
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
 	<script src="{% static 'explorer/js/semantic.min.js' %}"></script>
 	{% leaflet_js %}
 	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
 	<script defer src="{% static 'explorer/js/explorer.js' %}"></script>
 	{% leaflet_css %}
-	<link rel="stylesheet" href="{% static 'explorer/css/semantic.min.css' %}">
+	
 	
     </head>
     <body>
@@ -71,7 +72,7 @@
 			</div>
 			<div class="field">
 			    <label>Value</label>
-			    <div class="ui fluid search selection dropdown">
+			    <div class="ui fluid search selection dropdown" id="filter-dropdown">
 				<input type="text">
 				<i class="dropdown icon"></i>
 				<div class="default text">[[cond.value]]</div>
@@ -128,14 +129,23 @@
 	    </div>
 	    <div class="ui tab" data-tab="tooltips" id="tooltips">
 		<div class="header item">Tooltips</div>
-		<form class="ui form" v-for="(items,key) in headers">
+		<form class="ui form" v-for="(items,key) in headers" v-bind:key="key">
 		    <div class="field">
 			<label>[[key]]</label>
-			<select multiple="" class="ui dropdown" id="multi-tooltip">
-			    <option v-for="col in items.columns" v-bind:value="col">
-				[[col]]
-			    </option>
-			</select>
+			<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
+			    <input type="hidden" name="columns">
+			    <i class="dropdown icon"></i>
+			    <div class="default text">Select columns as tooltips</div>
+			    <div class="menu">
+				<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
+			    </div>
+			</div>
+			<!-- <select multiple="" class="ui selection dropdown" id="multi-tooltip">
+			     <option value=""></option>
+			     <option v-for="col in items.columns" v-bind:value="col">
+			     [[col]]
+			     </option>
+			     </select> -->
 		    </div>
 		    <button class="ui primary button right aligned">Done</button>
 		</form>

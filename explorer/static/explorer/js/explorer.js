@@ -150,7 +150,11 @@ var tooltips = new Vue({
     },
     watch:{
 	headers: function(){
-	    $('#multi-tooltip').dropdown();
+	    console.log("Lets rerun dropdown");
+	    setTimeout(() => {
+		$(".dropdown").dropdown();
+	    }, 0);
+	    //$('.ui.dropdown').dropdown('refresh', {on:'click'});
 	}
     }
 });
@@ -232,18 +236,20 @@ var filters = new Vue({
     }
 });
 
+$(document).ready(function(){
+    $('#filter-dropdown').dropdown({
+	fullTextSearch: true
+    });
+    
+    $('.ui.dropdown').dropdown();
 
-$('.ui.search.dropdown')
-  .dropdown({
-    fullTextSearch: true
-  });
+    $('.menu .item').tab();
 
+    $('.popup.item').popup();
 
-$('.menu .item').tab();
+    $('.ui.sidebar').sidebar();
+});
 
-$('.popup.item').popup();
-
-$('.ui.sidebar').sidebar();
 
 function map_init_basic (map, options) {
     samap.map = map;
