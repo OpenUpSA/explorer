@@ -125,9 +125,16 @@
 			    </div>
 			</div>
 		    </div>
-		    <div class="ui button" v-on:click="done">Done</div>
+		    <div class="ui mini blue right floated button" v-on:click="done">
+			<i class="check icon"></i>
+			Done
+		    </div>
 		</form>
-		<div class="ui button" v-on:click="addCondition">Add Condition</div>
+		<br>
+		<div class="ui button" v-on:click="addCondition">
+		    <i class="plus icon"></i>
+		    Add Condition
+		</div>
 	    </div>
 	    <div class="ui tab" data-tab="tooltips" id="tooltips">
 		<div class="header item">Tooltips</div>
