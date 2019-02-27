@@ -122,7 +122,7 @@ var layers = new Vue({
 	    if (datasetOptions.datasets.length == 0){
 		$.ajax({
 		    dataType:"json",
-		    url: "/api/v1/datasets",
+		    url: "api/v1/datasets",
 		    method: "GET",
 		    success: function(data){
 			datasetOptions.datasets = data;
@@ -148,8 +148,9 @@ var layers = new Vue({
 		}
 	    }
 	    //remove layer tooltips
+	    this.$delete(tooltips.headers, name);
 	    this.$delete(tooltips.tooltipSelection, name);
-	    
+	    this.$delete(tooltips.tipSelected, name);
 	    console.log("Removing all the layer filters");
 	    this.$delete(filters.conditions, name);
 	    this.$delete(filters.columns,name);
