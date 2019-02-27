@@ -1,0 +1,58 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n admin_static admin_modify %}
+{% load admin_urls %}
+{% load staticfiles %}
+
+
+{% block extrastyle %}
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/csv_form.css' %}">
+    <script type="text/javascript" src="{% static 'js/partner.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+	<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+	&rsaquo;<a href="{% url 'admin:app_list' app_label='Explorer' %}">{% trans 'Explorer' %}</a>
+	&rsaquo;<a>{% trans 'Import' %}</a>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+	<div class="row">
+	    <div class="col-3"></div>
+	    <div class="col-6">
+		<h3>Upload Partner Template</h3>
+		<div class="infonote">
+		    <ul>
+			<li>Only .xlsx files are supported</li>
+		    </ul>
+		</div>
+		<div>
+		    <p id="errorMessage" class="errornote" style="display:none;">
+			Unable to upload file
+		    </p>
+		    <p id="successMessage" class="successnote" style="display:none;">
+			File Uploaded and Processed
+		    </p>
+		</div>
+		<div>
+		    <form id="partner_import_form" action="{{request.path}}" method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit" class="default">Upload Template</button>
+		    </form>
+		</div>
+		<div>
+		    <p id="errorDetail" class="errornote" style="display:none;"></p>
+		</div>
+		<div class="loader"></div>
+	    </div>
+	    <div class="col-3"></div>
+	</div>
+    </div>
+{% endblock %}
+
