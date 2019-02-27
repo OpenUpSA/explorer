@@ -6,6 +6,7 @@ function getRandomColor() {
     return colours[colorIndex];
 }
 
+//show the points on the map
 var samap = new Vue({
     el: '#southafrica',
     delimiters: ["[[","]]"],
@@ -138,6 +139,16 @@ var layers = new Vue({
 	removeLayer(name){
 	    console.log("Removing the layer");
 	    this.$delete(this.layers, name);
+
+	    //remove sources
+	    for (var i=0; i< filters.sources.length;i++){
+		if (filters.sources[i] == name){
+		    filters.sources.splice(i,1);
+		    break;
+		}
+	    }
+	    //remove layer tooltips
+	    this.$delete(tooltips.tooltipSelection, name);
 	    
 	    console.log("Removing all the layer filters");
 	    this.$delete(filters.conditions, name);
@@ -173,9 +184,6 @@ var tooltips = new Vue({
 		this.$set(this.tooltipSelection, layer, []);
 	    }
 	    this.$set(samap.geo, key, count);
-	    //console.log(samap.geo[layer]);
-	    //samap.geo[layer] = Object.assign({}, samap.geo[layer], {"count": count});
-	    //samap.geo[layer].count++;
 	},
     },
     watch:{
@@ -203,12 +211,14 @@ var filters = new Vue({
     },
     methods:{
 	removeCondition:function(layer, index){
+	    var count = Math.floor(Math.random() * ((100 -1) - 0 + 1)) + 0;
+	    var key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 	    console.log("removing condition from layer");
 	    console.log(index);
 	    this.conditions[layer].conditions.splice(index,1);
 	    // We need to update the map without this filter, retrigger geo
 	    // There must be a better way of doing this.
-	    this.$set(samap.geo, "filter", true);
+	    this.$set(samap.geo, key, count);
 	    
 	    
 	    
@@ -220,6 +230,8 @@ var filters = new Vue({
 	    return 'ui '+ colour +' ribbon label';
 	},
 	done: function(){
+	    var count = Math.floor(Math.random() * ((100 -1) - 0 + 1)) + 0;
+	    var key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 	    console.log('Saving the new filter');
 	    console.log(this.valueSelected);
 	    
@@ -235,8 +247,7 @@ var filters = new Vue({
 	    this.currentColumns = '';
 	    this.currentvalues = '';
 	    this.displayMenu = 'none';
-	    this.$set(samap.geo, "removed", true);
-	    //samap.geo['removed'] = true;
+	    this.$set(samap.geo, key, count);
 	},
 	addCondition: function(){
 	    this.displayMenu = 'block';
