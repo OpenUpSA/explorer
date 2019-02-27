@@ -25,6 +25,7 @@
 	 }
 	</style>
 	<div class="ui visible white sidebar vertical menu">
+	    <h3> Explorer <small>v0.1</small></h3>
 	    <div class="ui secondary menu borderless">
 		<a class="popup item active" data-tab="layers" data-content="Dataset Layers">
 		    <i class="bars icon"></i>
@@ -131,6 +132,7 @@
 		    </div>
 		</form>
 		<br>
+		<br>
 		<div class="ui button" v-on:click="addCondition">
 		    <i class="plus icon"></i>
 		    Add Condition
@@ -153,7 +155,7 @@
 			    </div>
 			</div>
 		    </div>
-		    <div class="ui blue basic button right aligned" v-on:click="done(key)" v-bind:key="key">
+		    <div class="ui blue mini button right floated" v-on:click="done(key)" v-bind:key="key">
 			<i class="check icon"></i>
 			Update
 		    </div>
