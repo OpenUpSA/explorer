@@ -6,52 +6,59 @@
 
 {% block extrastyle %}
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/grid.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/csv_form.css' %}">
-    <script type="text/javascript" src="{% static 'js/partner.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'explorer/css/semantic.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'explorer/css/explorer.css' %}">
+    <script type="text/javascript" src="{% static 'explorer/js/semantic.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'explorer/js/upload.js' %}"></script>
 {% endblock %}
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
 	<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-	&rsaquo;<a href="{% url 'admin:app_list' app_label='Explorer' %}">{% trans 'Explorer' %}</a>
+	&rsaquo;<a href="{% url 'admin:app_list' app_label='explorer' %}">{% trans 'Explorer' %}</a>
 	&rsaquo;<a>{% trans 'Import' %}</a>
     </div>
 {% endblock %}
 
 
 {% block content %}
-    <div class="container">
-	<div class="row">
-	    <div class="col-3"></div>
-	    <div class="col-6">
-		<h3>Upload Partner Template</h3>
-		<div class="infonote">
+    <div class="ui two column centered grid">
+	<div class="ui card">
+	    <div class="content">
+		<div class="header">Upload CSV Dataset</div>
+	    </div>
+	    <div class="content">
+		<div class="ui info message">
+		    <div class="header">Info</div>
 		    <ul>
-			<li>Only .xlsx files are supported</li>
+			<li>Only .csv files are supported</li>
+			<li>Make sure Latitude/Longitude column headers are written as such</li>
 		    </ul>
 		</div>
-		<div>
-		    <p id="errorMessage" class="errornote" style="display:none;">
-			Unable to upload file
-		    </p>
-		    <p id="successMessage" class="successnote" style="display:none;">
-			File Uploaded and Processed
-		    </p>
+		<div class="ui negative message" style="display:none">
+		    <i class="close icon"></i>
+		    <div class="header">
+			Error Uploading Csv
+		    </div>
+		    <div id="errorDetail"></div>
 		</div>
-		<div>
-		    <form id="partner_import_form" action="{{request.path}}" method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-			{{ form.as_p }}
-			<button type="submit" class="default">Upload Template</button>
-		    </form>
+		<div class="ui positive message" style="display:none">
+		    <i class="close icon"></i>
+		    <div class="header">
+			Dataset Uploaded!
+		    </div>
 		</div>
-		<div>
-		    <p id="errorDetail" class="errornote" style="display:none;"></p>
-		</div>
-		<div class="loader"></div>
 	    </div>
-	    <div class="col-3"></div>
+	    <form class="ui form" id="explorer_import_form" action="{{request.path}}" method="POST" enctype="multipart/form-data">
+		<div class="content">
+		    {% csrf_token %}
+		    {{ form.as_p }}
+		</div>
+		<div class="extra-content">
+		    <button type="submit" class="ui primary button">Upload Dataset</button>
+		    <div class="loader center aligned" style="display:none"></div>
+		</div>
+	    </form>
 	</div>
     </div>
 {% endblock %}
