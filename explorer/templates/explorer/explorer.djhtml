@@ -40,6 +40,15 @@
 	    <div class="ui big list tab active" data-tab="layers" id="layers">
 		<div class="header item">Layers</div>
 		<div class="ui divider"></div>
+		<div class="ui selection dropdown">
+		    <input type="hidden" name="boundaries" v-model="boundarySelected"
+			   v-on:change="boundarySelected=$event.target.value">
+		    <i class="dropdown icon"></i>
+		    <div class="default text">Boundry</div>
+		    <div class="menu">
+			<div class="item" v-for="(item, key) in boundaries" v-bind:data-value="key">[[key]]</div>
+		    </div>
+		</div>
 		<div class="ui item"
 		     v-for="(item,key) in layers"
 		     v-bind:key="key">
@@ -51,6 +60,7 @@
 			</i>
 		    </span>
 		</div>
+		<br>
 		<br>
 		<button v-on:click="fetchLayers" class="ui black basic button right aligned">
 		    <i class="plus icon"></i>

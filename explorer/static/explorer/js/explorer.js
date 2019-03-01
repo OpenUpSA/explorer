@@ -114,7 +114,62 @@ var layers = new Vue({
     el: '#layers',
     delimiters: ["[[", "]]"],
     data:{
-	layers: {}
+	layers: {},
+	boundaries:{
+	    "Provincial": "PR",
+	    "District": "DC",
+	    "Municipal": "MN"
+	},
+	boundarySelected: '',
+	map: ''
+    },
+    watch:{
+	boundarySelected: function(){
+	    var self = this;
+	    if (this.boundarySelected == ''){
+		console.log("Nothing to do");
+	    }else{
+		self.map.eachLayer(function(layer){
+		    if (layer.myTag == "boundary"){
+			self.map.removeLayer(layer);
+		    }
+		});
+		url = 'https://mapit.code4sa.org/areas/' +
+		    this.boundaries[this.boundarySelected] +
+		    '.geojson?generation=2&simplify_tolerance=0.005';
+		//var self = this;
+		$.ajax({
+		    dataType:"json",
+		    url:url,
+		    method:"GET",
+		    success:function(data){
+			var style = {
+			    "clickable": false,
+			    "color": "#00d",
+			    "fillColor": "#ccc",
+			    "weight": 1.0,
+			    "opacity": 0.3,
+			    "fillOpacity": 0.3,
+			};
+			L.geoJSON(data,{
+			    style:style,
+			    onEachFeature(feature,layer){
+				layer.bringToBack();
+				layer.myTag = "boundary";
+				layer.on('mouseover', function() {
+				    layer.bindPopup(feature.properties.name).openPopup();
+				});
+				//layer.bindTooltip(feature.properties.name).openTooltip();
+				//layer.bindLabel(feature.properties.name, {direction: 'auto'});
+			    }
+			}).addTo(self.map);
+		    },
+		    error:function(error){
+			console.log("Uable to get Boundry");
+		    }
+		});
+	    }
+	}
     },
     methods:{
 	fetchLayers: function(){
@@ -285,4 +340,6 @@ $(document).ready(function(){
 
 function map_init_basic (map, options) {
     samap.map = map;
+    layers.map = map;
 }
+
