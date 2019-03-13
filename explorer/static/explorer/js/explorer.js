@@ -74,7 +74,8 @@ var samap = new Vue({
 	    		return L.circleMarker(latlng,{
 	    		    renderer: renderer,
 	    		    radius:4,
-			    color: value.colour
+			    color: value.colour,
+			    fillColor: value.colour
 	    		});
 	    	    }
 		}).addTo(this.map);
@@ -154,13 +155,10 @@ var layers = new Vue({
 			L.geoJSON(data,{
 			    style:style,
 			    onEachFeature(feature,layer){
-				layer.bringToBack();
 				layer.myTag = "boundary";
-				layer.on('mouseover', function() {
+				layer.on('click', function() {
 				    layer.bindPopup(feature.properties.name).openPopup();
 				});
-				//layer.bindTooltip(feature.properties.name).openTooltip();
-				//layer.bindLabel(feature.properties.name, {direction: 'auto'});
 			    }
 			}).addTo(self.map);
 		    },
