@@ -8,7 +8,7 @@
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
 	<script src="{% static 'explorer/js/semantic.min.js' %}"></script>
 	{% leaflet_js %}
-	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
+	<script defer src="{% static 'explorer/js/vue.min.js' %}"></script>
 	<script defer src="{% static 'explorer/js/explorer.js' %}"></script>
 	{% leaflet_css %}
 	
