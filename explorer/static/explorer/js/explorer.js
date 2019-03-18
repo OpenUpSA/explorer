@@ -1,3 +1,4 @@
+// I'm assuming only a couple of layers will be selected.
 function getRandomColor() {
     var colours = ['red', 'orange', 'yellow', 'olive', 'green',
 		   'teal', 'blue', 'violet', 'purple', 'pink',
@@ -94,16 +95,31 @@ var datasetOptions = new Vue({
     methods:{
 	addToLayer: function(data){
 	    var colour = getRandomColor();
-	    this.$set(filters.conditions, data.name, {"conditions":[], "colour": colour});
-	    this.$set(filters.columns, data.name, {"columns": data.columns, "colour": colour});
-	    filters.sources.push(data.name);
-	    this.$set(tooltips.headers, data.name, {"columns": Object.keys(data.columns)});
+	    var self = this;
+	    $.ajax({
+		dataType: 'json',
+		url: 'api/v1/datasets/'+data.id,
+		method: 'GET',
+		success: function(result){
+		    self.$set(filters.conditions, data.name,
+			      {"conditions":[], "colour": colour});
+		    self.$set(filters.columns, data.name,
+			      {"columns": result.columns, "colour": colour});
+		    filters.sources.push(data.name);	    
+		    self.$set(tooltips.headers, data.name, {"columns": Object.keys(result.columns)});
 	    
-	    this.$set(samap.geo, data.name, {"geo": data.data,"colour": colour, "count": 0});
+		    self.$set(samap.geo, data.name,
+			      {"geo": result.data,"colour": colour,
+			       "count": 0});
 	    
-	    this.$set(layers.layers, data.name, {"colour": colour});
+		    self.$set(layers.layers, data.name, {"colour": colour});
+		    $('.ui.modal').modal('hide');
+		},
+		error: function(error){
+		    console.log(error);
+		}
+	    });
 	    
-	    $('.ui.modal').modal('hide');
 	},
     }
 });
