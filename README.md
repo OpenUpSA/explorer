@@ -1,5 +1,5 @@
 
-Explorer 0.1
+Explorer 0.2
 =============
 
 Explorer is a simple Django app to view points on the map.
