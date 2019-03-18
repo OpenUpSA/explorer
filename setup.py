@@ -15,9 +15,10 @@ install_requires = [
 
 setup(
     name='explorer',
-    version='0.1',
+    version='0.2',
     packages=find_packages(exclude=['project']),
     include_package_data=True,
+    install_requires=install_requires,
     licence="MIT",
     description="Explorer is a simple Django app to view points on the map.",
     long_description=README,
