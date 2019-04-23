@@ -8,7 +8,7 @@
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
 	<script src="{% static 'explorer/js/semantic.min.js' %}"></script>
 	{% leaflet_js %}
-	<script defer src="{% static 'explorer/js/vue.min.js' %}"></script>
+	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
 	<script defer src="{% static 'explorer/js/explorer.js' %}"></script>
 	{% leaflet_css %}
 	
@@ -25,7 +25,7 @@
 	 }
 	</style>
 	<div class="ui visible white sidebar vertical menu">
-	    <h3> Explorer <small>v0.2</small></h3>
+	    <h3> Explorer <small>v0.3</small></h3>
 	    <div class="ui secondary menu borderless">
 		<a class="popup item active" data-tab="layers" data-content="Dataset Layers">
 		    <i class="bars icon"></i>
@@ -40,15 +40,6 @@
 	    <div class="ui big list tab active" data-tab="layers" id="layers">
 		<div class="header item">Layers</div>
 		<div class="ui divider"></div>
-		<div class="ui selection dropdown">
-		    <input type="hidden" name="boundaries" v-model="boundarySelected"
-			   v-on:change="boundarySelected=$event.target.value">
-		    <i class="dropdown icon"></i>
-		    <div class="default text">Boundry</div>
-		    <div class="menu">
-			<div class="item" v-for="(item, key) in boundaries" v-bind:data-value="key">[[key]]</div>
-		    </div>
-		</div>
 		<div class="ui item"
 		     v-for="(item,key) in layers"
 		     v-bind:key="key">
@@ -62,10 +53,29 @@
 		</div>
 		<br>
 		<br>
-		<button v-on:click="fetchLayers" class="ui black basic button right aligned">
+		<button v-on:click="fetchDataset" class="ui black basic button right aligned">
 		    <i class="plus icon"></i>
-		    Add Layer
+		    Add Dataset Layer
 		</button>
+		<div class="ui divider"></div>
+		<br>
+		<div class="ui item"
+		     v-for="(item,key) in geolayers"
+		     v-bind:key="key">
+		    <span>
+			<span v-bind:class="layerColour(item)"></span>
+			[[key]]
+			<i class="right aligned trash alternate icon link"
+			   v-on:click="removeLayer(key)">
+			</i>
+		    </span>
+		</div>
+		<br>
+		<button v-on:click="fetchGeography" class="ui black basic button right aligned">
+		    <i class="plus icon"></i>
+		    Add Geography Layer
+		</button>
+		<div class="ui divider"></div>
 	    </div>
 	    <div class="ui tab" data-tab="filters" id="filters">
 		<div class="header item">Filters</div>
@@ -175,7 +185,7 @@
 	<div class="ui grid pusher">
 	    {% leaflet_map "southafrica" callback="window.map_init_basic" %}
 	</div>
-	<div class="ui modal">
+	<div class="ui dataset modal">
 	    <div class="header">Select a Dataset Layer</div>
 	    <div class="content">
 		<div class="ui massive list" id="datasetOptions">
@@ -184,6 +194,19 @@
 		       v-bind:key="dataset.id"
 		       v-on:click="addToLayer(dataset)">
 			[[dataset.name]]
+		    </a>
+		</div>
+	    </div>
+	</div>
+	<div class="ui geography modal">
+	    <div class="header">Select a Geography Layer</div>
+	    <div class="content">
+		<div class="ui massive list" id="geoOptions">
+		    <a class="item"
+		       v-for="geo in geography"
+		       v-bind:key="geo.id"
+		       v-on:click="addToGeo(geo)">
+			[[geo.name]]
 		    </a>
 		</div>
 	    </div>

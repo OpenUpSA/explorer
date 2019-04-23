@@ -85,12 +85,47 @@ var samap = new Vue({
     }
 });
 
+//show the avaliable geographies
+var geoOptions = new Vue({
+    el: "#geoOptions",
+    delimiters: ["[[", "]]"],
+    data: {
+	geography: []
+    },
+    methods:{
+	addToGeo: function(data){
+	    var colour = getRandomColor();
+	    var self = this;
+	    $.ajax({
+		dataType: 'json',
+		url: 'api/v1/geography/'+ data.id,
+		method: 'GET',
+		success: function(result){
+		    fetch(result.filename).then(function(response){
+			return response;
+		    }).then(function(geoJson){
+			 self.$set(samap.geo, geoJson,
+			      {"geo": result.data,"colour": colour,
+			       "count": 0});
+		    });
+		    //self.$set(tooltips.headers, data.name, {"columns": Object.keys(result.columns)});
+		    // self.$set(samap.geo, data.name,
+		    // 	      {"geo": result.data,"colour": colour,
+		    // 	       "count": 0});
+		    self.$set(layers.geolayers, data.name, {"colour": colour});
+		    $('.ui.modal').modal('hide');
+		}
+	    });
+	}
+    }
+});
+
 //Show the avaliable datasets
 var datasetOptions = new Vue({
     el: '#datasetOptions',
     delimiters: ["[[", "]]"],
     data: {
-	datasets: []
+	datasets: [],
     },
     methods:{
 	addToLayer: function(data){
@@ -132,6 +167,7 @@ var layers = new Vue({
     delimiters: ["[[", "]]"],
     data:{
 	layers: {},
+	geolayers: {},
 	boundaries:{
 	    "Provincial": "PR",
 	    "District": "DC",
@@ -140,54 +176,10 @@ var layers = new Vue({
 	boundarySelected: '',
 	map: ''
     },
-    watch:{
-	boundarySelected: function(){
-	    var self = this;
-	    if (this.boundarySelected == ''){
-		console.log("Nothing to do");
-	    }else{
-		self.map.eachLayer(function(layer){
-		    if (layer.myTag == "boundary"){
-			self.map.removeLayer(layer);
-		    }
-		});
-		url = 'https://mapit.code4sa.org/areas/' +
-		    this.boundaries[this.boundarySelected] +
-		    '.geojson?generation=2&simplify_tolerance=0.005';
-		//var self = this;
-		$.ajax({
-		    dataType:"json",
-		    url:url,
-		    method:"GET",
-		    success:function(data){
-			var style = {
-			    "clickable": false,
-			    "color": "#00d",
-			    "fillColor": "#ccc",
-			    "weight": 1.0,
-			    "opacity": 0.3,
-			    "fillOpacity": 0.3,
-			};
-			L.geoJSON(data,{
-			    style:style,
-			    onEachFeature(feature,layer){
-				layer.myTag = "boundary";
-				layer.on('click', function() {
-				    layer.bindPopup(feature.properties.name).openPopup();
-				});
-			    }
-			}).addTo(self.map);
-		    },
-		    error:function(error){
-			console.log("Uable to get Boundry");
-		    }
-		});
-	    }
-	}
-    },
+    
     methods:{
-	fetchLayers: function(){
-	    $('.ui.modal').modal('show');
+	fetchDataset: function(){
+	    $('.ui.dataset.modal').modal('show');
 	    if (datasetOptions.datasets.length == 0){
 		$.ajax({
 		    dataType:"json",
@@ -195,6 +187,22 @@ var layers = new Vue({
 		    method: "GET",
 		    success: function(data){
 			datasetOptions.datasets = data;
+		    },
+		    error: function(error){
+			console.log("We cant find anything here");
+		    }
+		});
+	    }
+	},
+	fetchGeography: function(){
+	    $('.ui.geography.modal').modal('show');
+	    if (geoOptions.geography.length == 0){
+		$.ajax({
+		    dataType:"json",
+		    url: "api/v1/geography",
+		    method: "GET",
+		    success: function(data){
+			geoOptions.geography = data;
 		    },
 		    error: function(error){
 			console.log("We cant find anything here");
