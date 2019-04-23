@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf.urls import url
 
-from .models import Dataset
+from .models import Dataset, Geographic
 from .forms import ExplorerImportForm
 from .process import import_csv
 
@@ -49,3 +49,4 @@ class ExplorerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Dataset, ExplorerAdmin)
+admin.site.register(Geographic)

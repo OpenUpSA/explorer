@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
-from .models import Dataset
-from .serializer import DatasetSerializer, DatasetsSerializer
+from .models import Dataset, Geographic
+from .serializer import DatasetSerializer, DatasetsSerializer, GeographySerializer, GeographysSerializer
 from django.http import JsonResponse
 
 
@@ -23,4 +23,18 @@ class DatasetsView(APIView):
     def get(self, request):
         query = Dataset.objects.all()
         serializer = DatasetsSerializer(query, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+class GeographyView(APIView):
+    def get(self, request, id):
+        query = get_object_or_404(Geographic, id=id)
+        serializer = GeographySerializer(query, context={'request': request})
+        return JsonResponse(serializer.data)
+
+
+class GeographysView(APIView):
+    def get(self, request):
+        query = Geographic.objects.all()
+        serializer = GeographysSerializer(query, many=True)
         return JsonResponse(serializer.data, safe=False)
