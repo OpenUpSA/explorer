@@ -7,12 +7,6 @@ Explorer is a simple Django app to view points on the map.
 Project is still under development, the first stable release will be 1.0
 
 
-Goals of the app
------------------
-1. Add Datasets as geojson map layers.
-2. Points can be filtered according to column values.
-3. Tooltips can be configured to show less or more information about a point.
-
 
 Install
 --------------
@@ -22,23 +16,30 @@ Install
    ```
    INSTALLED_APPS = [
        ...
+	   
        'explorer',
    ]
    ```
    
-2. Include the explorer URLconf to the projects urls.py
+2. Include the explorer URLconf to the projects ```urls.py```
 
    ```
    url(r'^explorer/', include('explorer.urls', namespace='explorer'))
    ```
    
 3. Configure the leaflet to centre your map, these settings are for South Africa
+
    ```
    LEAFLET_CONFIG = {
+   
     'DEFAULT_CENTER': (-29.440, 29.443),
-    'DEFAULT_ZOOM': 5,
+	
+    'DEFAULT_ZOOM': 6,
+	
     'MIN_ZOOM': 3,
+	
     'MAX_ZOOM': 18,
+	
     'RESET_VIEW': False
 }
    ```
