@@ -11,7 +11,7 @@ class Dataset(models.Model):
         return self.name
 
 
-class Geographic(models.Model):
+class Geography(models.Model):
     name = models.CharField(max_length=25)
     columns = ArrayField(models.CharField(max_length=20))
     filename = models.FileField(upload_to='')

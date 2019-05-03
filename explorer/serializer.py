@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Dataset, Geographic
+from .models import Dataset, Geography
 
 
 class DatasetsSerializer(serializers.ModelSerializer):
@@ -21,11 +21,11 @@ class GeographySerializer(serializers.ModelSerializer):
         return self.context['request'].build_absolute_uri(obj.filename.url)
 
     class Meta:
-        model = Geographic
+        model = Geography
         fields = ('id', 'name', 'columns', 'filename_url')
 
 
 class GeographysSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Geographic
+        model = Geography
         fields = ('id', 'name')
