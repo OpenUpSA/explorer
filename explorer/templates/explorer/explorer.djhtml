@@ -57,25 +57,26 @@
 		    <i class="plus icon"></i>
 		    Add Dataset Layer
 		</button>
-		<div class="ui divider"></div>
-		<br>
-		<div class="ui item"
+		<!-- We will add shapeflies maps soon -->
+		<!-- <div class="ui divider"></div>
+		     <br>
+		     <div class="ui item"
 		     v-for="(item,key) in geolayers"
 		     v-bind:key="key">
-		    <span>
-			<span v-bind:class="layerColour(item)"></span>
-			[[key]]
-			<i class="right aligned trash alternate icon link"
-			   v-on:click="removeLayer(key)">
-			</i>
-		    </span>
-		</div>
-		<br>
-		<button v-on:click="fetchGeography" class="ui black basic button right aligned">
-		    <i class="plus icon"></i>
-		    Add Geography Layer
-		</button>
-		<div class="ui divider"></div>
+		     <span>
+		     <span v-bind:class="layerColour(item)"></span>
+		     [[key]]
+		     <i class="right aligned trash alternate icon link"
+		     v-on:click="removeLayer(key)">
+		     </i>
+		     </span>
+		     </div>
+		     <br>
+		     <button v-on:click="fetchGeography" class="ui black basic button right aligned">
+		     <i class="plus icon"></i>
+		     Add Geography Layer
+		     </button>
+		     <div class="ui divider"></div> -->
 	    </div>
 	    <div class="ui tab" data-tab="filters" id="filters">
 		<div class="header item">Filters</div>
