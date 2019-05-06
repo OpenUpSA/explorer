@@ -11,7 +11,10 @@ Project is still under development, the first stable release will be 1.0
 Install
 --------------
 
-1. Add ```explorer``` to your INSTALLED_APPS
+1. ```pip install git+https://github.com/OpenUpSA/explorer.git@master#egg=explorer```
+
+
+2. Add ```explorer``` to your INSTALLED_APPS
    
    ```
    INSTALLED_APPS = [
@@ -21,13 +24,13 @@ Install
    ]
    ```
    
-2. Include the explorer URLconf to the projects ```urls.py```
+3. Include the explorer URLconf to the projects ```urls.py```
 
    ```
    url(r'^explorer/', include('explorer.urls', namespace='explorer'))
    ```
    
-3. Configure the leaflet to centre your map, these settings are for South Africa
+4. Configure the leaflet to centre your map, these settings are for South Africa
 
    ```
    LEAFLET_CONFIG = {
@@ -44,9 +47,9 @@ Install
 	}
    ```
 
-3. Run ```python manage.py migrate``` to create the explorer models.
+5. Run ```python manage.py migrate``` to create the explorer models.
 
-4. Make sure the admin app is enabled.
+6. Make sure the admin app is enabled.
 
 
 
