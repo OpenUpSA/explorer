@@ -41,21 +41,12 @@ Install
     'MAX_ZOOM': 18,
 	
     'RESET_VIEW': False
-}
+	}
    ```
 
 3. Run ```python manage.py migrate``` to create the explorer models.
 
 4. Make sure the admin app is enabled.
-
-
-Uploading datasets
-------------------
-Datasets can be imported via 2 methods
-
-1. ```./manage.py csv_import <csv file> <dataset name>```
-
-2. Upload from the admin menu, under the explorer app.
 
 
 
