@@ -179,7 +179,7 @@ var layers = new Vue({
     
     methods:{
 	fetchDataset: function(){
-	    $('.ui.dataset.modal').modal('show');
+	    $('.modal.dataset').addClass('is-active');
 	    if (datasetOptions.datasets.length == 0){
 		$.ajax({
 		    dataType:"json",
@@ -211,7 +211,7 @@ var layers = new Vue({
 	    }
 	},
 	layerColour(layer){
-	    return 'ui ' + layer.colour +' empty circular label'; 
+	    return 'tag is-info'; 
 	},
 	removeLayer(name){
 	    console.log("Removing the layer");
@@ -346,17 +346,18 @@ var filters = new Vue({
 });
 
 $(document).ready(function(){
-    $('#filter-dropdown').dropdown({
-	fullTextSearch: true
+    $('#tabs li').on('click', function(){
+	var tab = $(this).data('tab');
+	$('#tabs li').removeClass('is-active');
+	$(this).addClass('is-active');
+
+	$('#tab-content div').removeClass('is-active');
+	$('div[data-content="'+ tab + '"]').addClass('is-active');
+    });
+    $('.modal-close').on('click',function(){
+	$('.modal').removeClass('is-active');
     });
     
-    $('.ui.dropdown').dropdown();
-
-    $('.menu .item').tab();
-
-    $('.popup.item').popup();
-
-    $('.ui.sidebar').sidebar();
 });
 
 

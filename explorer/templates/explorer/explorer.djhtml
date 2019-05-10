@@ -4,213 +4,240 @@
 <html lang="en">
     <head>
 	<meta charset="utf-8"/>
-	<link rel="stylesheet" href="{% static 'explorer/css/semantic.min.css' %}">
+	<link rel="stylesheet" href="{% static 'explorer/css/bulma.min.css' %}">
+	<link rel="stylesheet" href="{% static 'explorer/css/fontawesome.min.css' %}">
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
-	<script src="{% static 'explorer/js/semantic.min.js' %}"></script>
 	{% leaflet_js %}
 	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
 	<script defer src="{% static 'explorer/js/explorer.js' %}"></script>
 	{% leaflet_css %}
-	
-	
+
+
     </head>
     <body>
 	<style>
 	 #southafrica {
 	     height: 800px;
 	     width: 100%;
+	     z-index: 1;
 	 }
-	 body.pushable>.pusher {
-	     background: #FFFFFF;
+	 #tab-content div {
+	     display: none;
+	 }
+
+	 #tab-content div.is-active {
+	     display: block;
 	 }
 	</style>
-	<div class="ui visible white sidebar vertical menu">
-	    <h3> Explorer <small>v0.3</small></h3>
-	    <div class="ui secondary menu borderless">
-		<a class="popup item active" data-tab="layers" data-content="Dataset Layers">
-		    <i class="bars icon"></i>
-		</a>
-		<a class="popup item" data-tab="filters" data-content="Layer Filters">
-		    <i class="filter icon"></i>
-		</a>
-		<a class="popup item" data-tab="tooltips" data-content="Tooltips">
-		    <i class="map marker icon"></i>
-		</a>
-	    </div>
-	    <div class="ui big list tab active" data-tab="layers" id="layers">
-		<div class="header item">Layers</div>
-		<div class="ui divider"></div>
-		<div class="ui item"
-		     v-for="(item,key) in layers"
-		     v-bind:key="key">
-		    <span>
-			<span v-bind:class="layerColour(item)"></span>
-			[[key]]
-			<i class="right aligned trash alternate icon link"
-			   v-on:click="removeLayer(key)">
-			</i>
-		    </span>
-		</div>
-		<br>
-		<br>
-		<button v-on:click="fetchDataset" class="ui black basic button right aligned">
-		    <i class="plus icon"></i>
-		    Add Dataset Layer
-		</button>
-		<!-- We will add shapeflies maps soon -->
-		<!-- <div class="ui divider"></div>
-		     <br>
-		     <div class="ui item"
-		     v-for="(item,key) in geolayers"
-		     v-bind:key="key">
-		     <span>
-		     <span v-bind:class="layerColour(item)"></span>
-		     [[key]]
-		     <i class="right aligned trash alternate icon link"
-		     v-on:click="removeLayer(key)">
-		     </i>
-		     </span>
-		     </div>
-		     <br>
-		     <button v-on:click="fetchGeography" class="ui black basic button right aligned">
-		     <i class="plus icon"></i>
-		     Add Geography Layer
-		     </button>
-		     <div class="ui divider"></div> -->
-	    </div>
-	    <div class="ui tab" data-tab="filters" id="filters">
-		<div class="header item">Filters</div>
-		<div v-for="(item,key) in conditions">
-		    <form class="ui form" v-for="(cond, index) in item.conditions">
-			<span v-bind:class="filterColour(item.colour)">
-			    [[key]]
-			</span>
-			<i class="righ aligned trash alternate icon link" v-on:click="removeCondition(key, index)"></i>
-			<div class="field">
-			    <label>Column</label>
-			    <select class="ui fluid dropdown">
-				<option value="cond.column">
-				    [[cond.column]]
-				</option>
-			    </select>
+	<div class="columns">
+	    <div class="column is-one-fifth">
+		<h3 class="title">
+		    <strong>Explorer <small>0.4</small></strong>
+		</h3>
+		<div class="tabs is-toggle sidemenu" id="tabs">
+						    <ul>
+							    <li class="is-active" data-tab="layers">
+							    <a>
+								    <span class="icon is-small">
+								    <i class="fas fa-bars"></i>
+				</span>
+								    <span>Layers</span>
+			    </a>
+			</li>
+							    <li data-tab="filters">
+							    <a>
+								    <span class="icon is-small">
+								    <i class="fas fa-filter"></i>
+				</span>
+								    <span>Filters</span>
+			    </a>
+			</li>
+							    <li data-tab="tooltips">
+							    <a>
+								    <span class="icon is-small">
+								    <i class="fas fa-map-marker"></i>
+				</span>
+								    <span>Tooltips</span>
+			    </a>
+			</li>
+		    </ul>
+						</div>
+		<div id="tab-content">
+		    <div class="is-active" data-content="layers" id="layers">
+			<h5 class="subtitle">Layers</h5>
+			<ul>
+			    <li
+				v-for="(item,key) in layers"
+				       v-bind:key="key">
+				
+				<div class="tags are-large has-addons is-active">
+				    <span v-bind:class="layerColour(item)">
+					[[key]]
+				    </span>
+				    <a class="tag is-delete"></a>
+				</div>
+			    </li>
+			</ul>
+			<br>
+			<br>
+			<button v-on:click="fetchDataset" class="ui black basic button right aligned">
+			    <i class="fa fas-plus"></i>
+			    Add Dataset Layer
+			</button>
+		    </div>
+		    <div data-content="filters" id="filters">
+			<div class="header item">Filters</div>
+			<div v-for="(item,key) in conditions">
+			    <form class="ui form" v-for="(cond, index) in item.conditions">
+				<span v-bind:class="filterColour(item.colour)">
+				    [[key]]
+				</span>
+				<i class="righ aligned trash alternate icon link" v-on:click="removeCondition(key, index)"></i>
+				<div class="field">
+				    <label>Column</label>
+				    <select class="ui fluid dropdown">
+					<option value="cond.column">
+					    [[cond.column]]
+					</option>
+				    </select>
+				</div>
+				<div class="field">
+				    <label>Value</label>
+				    <div class="ui fluid search selection dropdown" id="filter-dropdown">
+					<input type="text">
+					<i class="dropdown icon"></i>
+					<div class="default text">[[cond.value]]</div>
+					<div class="menu">
+					    <div class="item" data-value="cond.value">
+						[[cond.value]]
+					    </div>
+					</div>
+				    </div>
+				</div>
+				<div class="ui divider"></div>
+			    </form>
 			</div>
-			<div class="field">
-			    <label>Value</label>
-			    <div class="ui fluid search selection dropdown" id="filter-dropdown">
-				<input type="text">
-				<i class="dropdown icon"></i>
-				<div class="default text">[[cond.value]]</div>
-				<div class="menu">
-				    <div class="item" data-value="cond.value">
-					[[cond.value]]
+			<form class="ui form" v-bind:style="{display:displayMenu}">
+			    <div class="field">
+				<label>Data Source</label>
+				<select class="ui fluid dropdown" v-model="sourceSelected" v-on:change="onSelectedSource">
+				    <option value="">Data Source</option>
+				    <option v-for="source in sources" v-bind:value="source">
+					[[source]]
+				    </option>
+				</select>
+			    </div>
+			    <div class="field">
+				<label>Column</label>
+				<select class="ui fluid dropdown"
+					v-model="columnSelected"
+					v-on:change='onSelectedColumn'>
+				    <option value="">Column</option>
+				    <option v-for="col in currentColumns" v-bind:value="col">
+					[[col]]
+				    </option>
+				</select>
+			    </div>
+			    <div class="field">
+				<label>Value</label>
+				<div class="ui fluid search selection dropdown">
+				    <input type="hidden"
+					   v-model="valueSelected"
+					   v-on:change="valueSelected=$event.target.value">
+				    <i class="dropdown icon"></i>
+				    <div class="default text"></div>
+				    <div class="menu">
+					<div class="item" v-for="val in currentValues"
+					     v-bind:data-value="val">
+					    [[val]]
+					</div>
 				    </div>
 				</div>
 			    </div>
+			    <div class="ui mini blue right floated button" v-on:click="done">
+				<i class="check icon"></i>
+				Done
+			    </div>
+			</form>
+			<br>
+			<br>
+			<div class="ui button" v-on:click="addCondition">
+			    <i class="plus icon"></i>
+			    Add Condition
 			</div>
-			<div class="ui divider"></div>
-		    </form>
-		</div>
-		<form class="ui form" v-bind:style="{display:displayMenu}">
-		    <div class="field">
-			<label>Data Source</label>
-			<select class="ui fluid dropdown" v-model="sourceSelected" v-on:change="onSelectedSource">
-			    <option value="">Data Source</option>
-			    <option v-for="source in sources" v-bind:value="source">
-				[[source]]
-			    </option>
-			</select>
 		    </div>
-		    <div class="field">
-			<label>Column</label>
-			<select class="ui fluid dropdown"
-				v-model="columnSelected"
-				v-on:change='onSelectedColumn'>
-			    <option value="">Column</option>
-			    <option v-for="col in currentColumns" v-bind:value="col">
-				[[col]]
-			    </option>
-			</select>
-		    </div>
-		    <div class="field">
-			<label>Value</label>
-			<div class="ui fluid search selection dropdown">
-			    <input type="hidden"
-				   v-model="valueSelected"
-				   v-on:change="valueSelected=$event.target.value">
-			    <i class="dropdown icon"></i>
-			    <div class="default text"></div>
-			    <div class="menu">
-				<div class="item" v-for="val in currentValues"
-				     v-bind:data-value="val">
-				    [[val]]
+		    <div data-content="tooltips" id="tooltips">
+			<div class="header item">Tooltips</div>
+			<form class="ui form" v-for="(items,key) in headers" v-bind:id="key">
+			    <div class="field">
+				<label>[[key]]</label>
+				<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
+				    <input type="hidden"
+					   name="columns"
+					   v-model="tipSelected[key]"
+					   v-on:change="tipSelected[key]=$event.target.value">
+				    <i class="dropdown icon"></i>
+				    <div class="default text">Select columns as tooltips</div>
+				    <div class="menu">
+					<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
+				    </div>
 				</div>
 			    </div>
-			</div>
-		    </div>
-		    <div class="ui mini blue right floated button" v-on:click="done">
-			<i class="check icon"></i>
-			Done
-		    </div>
-		</form>
-		<br>
-		<br>
-		<div class="ui button" v-on:click="addCondition">
-		    <i class="plus icon"></i>
-		    Add Condition
-		</div>
-	    </div>
-	    <div class="ui tab" data-tab="tooltips" id="tooltips">
-		<div class="header item">Tooltips</div>
-		<form class="ui form" v-for="(items,key) in headers" v-bind:id="key">
-		    <div class="field">
-			<label>[[key]]</label>
-			<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
-			    <input type="hidden"
-				   name="columns"
-				   v-model="tipSelected[key]"
-				   v-on:change="tipSelected[key]=$event.target.value">
-			    <i class="dropdown icon"></i>
-			    <div class="default text">Select columns as tooltips</div>
-			    <div class="menu">
-				<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
+			    <div class="ui blue mini button right floated" v-on:click="done(key)" v-bind:key="key">
+				<i class="check icon"></i>
+				Update
 			    </div>
-			</div>
+			</form>
 		    </div>
-		    <div class="ui blue mini button right floated" v-on:click="done(key)" v-bind:key="key">
-			<i class="check icon"></i>
-			Update
-		    </div>
-		</form>
-	    </div>
-			</div>
-	<div class="ui grid pusher">
-	    {% leaflet_map "southafrica" callback="window.map_init_basic" %}
-	</div>
-	<div class="ui dataset modal">
-	    <div class="header">Select a Dataset Layer</div>
-	    <div class="content">
-		<div class="ui massive list" id="datasetOptions">
-		    <a class="item"
-		       v-for="dataset in datasets"
-		       v-bind:key="dataset.id"
-		       v-on:click="addToLayer(dataset)">
-			[[dataset.name]]
-		    </a>
 		</div>
 	    </div>
+	    <div class="column">
+		{% leaflet_map "southafrica" callback="window.map_init_basic" %}
+	    </div>
 	</div>
-	<div class="ui geography modal">
-	    <div class="header">Select a Geography Layer</div>
-	    <div class="content">
-		<div class="ui massive list" id="geoOptions">
-		    <a class="item"
-		       v-for="geo in geography"
-		       v-bind:key="geo.id"
-		       v-on:click="addToGeo(geo)">
-			[[geo.name]]
-		    </a>
+	<div class="modal dataset">
+	    <div class="modal-background"></div>
+	    <div class="modal-content">
+		<div class="box">
+		    <h4 class="subtitle">Select Dataset</h4>
+		    <div class="content">
+			<ul id="datasetOptions">
+			    <li v-for="dataset in datasets"
+				       v-bind:key="dataset.id"
+				       v-on:click="addToLayer(dataset)">
+				<a>
+				    [[dataset.name]]
+				</a>
+
+			    </li>
+			</ul>
+		    </div>
 		</div>
 	    </div>
+	    <button class="modal-close is-large" aria-label="close">
+	    </button>
+	</div>
+	<div class="modal geography">
+	    <div class="modal-background"></div>
+	    <div class="modal-content">
+		<div class="box">
+		    <h4 class="subtitle">Select a Geography Layer</h4>
+		    <div class="content">
+			<ul id="geoOptions">
+			    <li v-for="geo in geography"
+				v-bind:key="geo.id"
+				v-on:click="addToGeo(geo)">
+				<a>
+				    [[geo.name]]
+				</a>
+			    </li>
+			</ul>
+		    </div>
+		</div>
+		
+	    </div>
+	    <button class="modal-close is-large" aria-label="close">
+	    </button>
 	</div>
     </body>
 </html>
