@@ -211,7 +211,7 @@ var layers = new Vue({
 	    }
 	},
 	layerColour(layer){
-	    return 'tag is-info'; 
+	    return 'background-color:'+layer.colour+';color:white'; 
 	},
 	removeLayer(name){
 	    console.log("Removing the layer");

@@ -1,11 +1,13 @@
 {% load static %}
 {% load leaflet_tags %}
+{% load sass_tags %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="{% static 'explorer/css/bulma.min.css' %}">
 	<link rel="stylesheet" href="{% static 'explorer/css/fontawesome.min.css' %}">
+	<link rel="stylesheet" href="{% sass_src 'explorer/css/explorer.scss' %}">
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
 	{% leaflet_js %}
 	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
@@ -35,46 +37,49 @@
 		    <strong>Explorer <small>0.4</small></strong>
 		</h3>
 		<div class="tabs is-toggle sidemenu" id="tabs">
-						    <ul>
-							    <li class="is-active" data-tab="layers">
-							    <a>
-								    <span class="icon is-small">
-								    <i class="fas fa-bars"></i>
+		    <ul>
+			<li class="is-active" data-tab="layers">
+			    <a>
+				<span class="icon is-small">
+				    <i class="fas fa-bars"></i>
 				</span>
-								    <span>Layers</span>
+				<span>Layers</span>
 			    </a>
 			</li>
-							    <li data-tab="filters">
-							    <a>
-								    <span class="icon is-small">
-								    <i class="fas fa-filter"></i>
+			<li data-tab="filters">
+			    <a>
+				<span class="icon is-small">
+				    <i class="fas fa-filter"></i>
 				</span>
-								    <span>Filters</span>
+				<span>Filters</span>
 			    </a>
 			</li>
-							    <li data-tab="tooltips">
-							    <a>
-								    <span class="icon is-small">
-								    <i class="fas fa-map-marker"></i>
+			<li data-tab="tooltips">
+			    <a>
+				<span class="icon is-small">
+				    <i class="fas fa-map-marker"></i>
 				</span>
-								    <span>Tooltips</span>
+				<span>Tooltips</span>
 			    </a>
 			</li>
 		    </ul>
-						</div>
+		</div>
 		<div id="tab-content">
 		    <div class="is-active" data-content="layers" id="layers">
 			<h5 class="subtitle">Layers</h5>
 			<ul>
 			    <li
 				v-for="(item,key) in layers"
-				       v-bind:key="key">
-				
-				<div class="tags are-large has-addons is-active">
-				    <span v-bind:class="layerColour(item)">
+				v-bind:key="key">
+
+				<div class="tags are-medium is-active">
+				    <span class="tag" v-bind:style="layerColour(item)">
 					[[key]]
 				    </span>
-				    <a class="tag is-delete"></a>
+				    <i class="fas fa-trash is-pulled-right"
+				       v-on:click="removeLayer(key)">
+				    </i>
+				    
 				</div>
 			    </li>
 			</ul>
@@ -130,8 +135,8 @@
 			    <div class="field">
 				<label>Column</label>
 				<select class="ui fluid dropdown"
-					v-model="columnSelected"
-					v-on:change='onSelectedColumn'>
+					       v-model="columnSelected"
+					       v-on:change='onSelectedColumn'>
 				    <option value="">Column</option>
 				    <option v-for="col in currentColumns" v-bind:value="col">
 					[[col]]
@@ -203,8 +208,8 @@
 		    <div class="content">
 			<ul id="datasetOptions">
 			    <li v-for="dataset in datasets"
-				       v-bind:key="dataset.id"
-				       v-on:click="addToLayer(dataset)">
+				v-bind:key="dataset.id"
+				v-on:click="addToLayer(dataset)">
 				<a>
 				    [[dataset.name]]
 				</a>
@@ -225,8 +230,8 @@
 		    <div class="content">
 			<ul id="geoOptions">
 			    <li v-for="geo in geography"
-				v-bind:key="geo.id"
-				v-on:click="addToGeo(geo)">
+				       v-bind:key="geo.id"
+				       v-on:click="addToGeo(geo)">
 				<a>
 				    [[geo.name]]
 				</a>
@@ -234,7 +239,7 @@
 			</ul>
 		    </div>
 		</div>
-		
+
 	    </div>
 	    <button class="modal-close is-large" aria-label="close">
 	    </button>
