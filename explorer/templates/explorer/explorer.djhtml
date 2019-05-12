@@ -7,7 +7,6 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="{% static 'explorer/css/bulma.min.css' %}">
 	<link rel="stylesheet" href="{% static 'explorer/css/fontawesome.min.css' %}">
-	<link rel="stylesheet" href="{% sass_src 'explorer/css/explorer.scss' %}">
 	<script src="{% static 'explorer/js/jquery.js' %}"></script>
 	{% leaflet_js %}
 	<script defer src="{% static 'explorer/js/vue.js' %}"></script>
@@ -23,177 +22,180 @@
 	     width: 100%;
 	     z-index: 1;
 	 }
-	 #tab-content div {
-	     display: none;
-	 }
-
-	 #tab-content div.is-active {
+	 #layers {
 	     display: block;
 	 }
+	 #filters {
+	     display: none;
+	 }
+	 #tooltips {
+	     display: none;
+	 }
 	</style>
-	<div class="columns">
-	    <div class="column is-one-fifth">
+	<div class="columns is-gapless">
+	    <div class="column is-2 has-background-grey-lighter ">
 		<h3 class="title">
 		    <strong>Explorer <small>0.4</small></strong>
 		</h3>
-		<div class="tabs is-toggle sidemenu" id="tabs">
+		<div class="tabs" id="tabs">
 		    <ul>
-			<li class="is-active" data-tab="layers">
-			    <a>
-				<span class="icon is-small">
-				    <i class="fas fa-bars"></i>
+			<li id="tab-layers" v-on:click="tabSwitch('layers')">
+																		    <a>
+																			    <span class="icon is-small">
+																			    <i class="fas fa-bars"></i>
 				</span>
-				<span>Layers</span>
+																			    <small>Layers</small>
 			    </a>
-			</li>
-			<li data-tab="filters">
-			    <a>
-				<span class="icon is-small">
-				    <i class="fas fa-filter"></i>
+																		</li>
+			<li id="tab-filters" v-on:click="tabSwitch('filters')">
+															    <a>
+																    <span class="icon is-small">
+																    <i class="fas fa-filter"></i>
 				</span>
-				<span>Filters</span>
+																    <small>Filters</small>
 			    </a>
-			</li>
-			<li data-tab="tooltips">
-			    <a>
-				<span class="icon is-small">
-				    <i class="fas fa-map-marker"></i>
+															</li>
+			<li id="tab-tooltips" v-on:click="tabSwitch('tooltips')">
+												    <a>
+													    <span class="icon is-small">
+													    <i class="fas fa-map-marker"></i>
 				</span>
-				<span>Tooltips</span>
+													    <small>Tooltips</small>
 			    </a>
-			</li>
+												</li>
 		    </ul>
 		</div>
-		<div id="tab-content">
-		    <div class="is-active" data-content="layers" id="layers">
+		<div id="tab-content" class="container has-background-white">
+		    <div class="is-active" id="layers">
 			<h5 class="subtitle">Layers</h5>
-			<ul>
-			    <li
-				v-for="(item,key) in layers"
-				v-bind:key="key">
+			<div class="content">
+			    <ul>
+				<li
+				    v-for="(item,key) in layers"
+				    v-bind:key="key">
 
-				<div class="tags are-medium is-active">
-				    <span class="tag" v-bind:style="layerColour(item)">
-					[[key]]
-				    </span>
-				    <i class="fas fa-trash is-pulled-right"
-				       v-on:click="removeLayer(key)">
-				    </i>
-				    
-				</div>
-			    </li>
-			</ul>
+				    <div class="tags are-medium is-active">
+					<span class="tag" v-bind:style="layerColour(item)">
+					    [[key]]
+					</span>
+					<i class="fas fa-trash is-pulled-right"
+					   v-on:click="removeLayer(key)">
+					</i>
+
+				    </div>
+				</li>
+			    </ul>
+			</div>
 			<br>
 			<br>
-			<button v-on:click="fetchDataset" class="ui black basic button right aligned">
-			    <i class="fa fas-plus"></i>
+			<button v-on:click="fetchDataset" class="button is-link">
+			    <i class="fas fa-plus"></i>
 			    Add Dataset Layer
 			</button>
+			<br>
 		    </div>
-		    <div data-content="filters" id="filters">
-			<div class="header item">Filters</div>
-			<div v-for="(item,key) in conditions">
-			    <form class="ui form" v-for="(cond, index) in item.conditions">
-				<span v-bind:class="filterColour(item.colour)">
+		    <div id="filters">
+			<h5 class="subtitle">Filters</h5>
+			<div class="content" v-for="(item,key) in conditions">
+			    <form v-for="(cond, index) in item.conditions">
+				<span class="tag" v-bind:style="filterColour(item.colour)">
 				    [[key]]
 				</span>
-				<i class="righ aligned trash alternate icon link" v-on:click="removeCondition(key, index)"></i>
+				<i class="fas fa-trash is-pulled-right" v-on:click="removeCondition(key, index)"></i>
 				<div class="field">
 				    <label>Column</label>
-				    <select class="ui fluid dropdown">
-					<option value="cond.column">
-					    [[cond.column]]
-					</option>
-				    </select>
+				    <div class="control">
+					<input class="input" type="text" value="cond.column" readonly>
+				    </div>
+
 				</div>
 				<div class="field">
 				    <label>Value</label>
-				    <div class="ui fluid search selection dropdown" id="filter-dropdown">
-					<input type="text">
-					<i class="dropdown icon"></i>
-					<div class="default text">[[cond.value]]</div>
-					<div class="menu">
-					    <div class="item" data-value="cond.value">
-						[[cond.value]]
-					    </div>
-					</div>
+				    <div class="control">
+					<input class="input" type="text" value="cond.value" readonly>
 				    </div>
 				</div>
 				<div class="ui divider"></div>
 			    </form>
 			</div>
-			<form class="ui form" v-bind:style="{display:displayMenu}">
-			    <div class="field">
-				<label>Data Source</label>
-				<select class="ui fluid dropdown" v-model="sourceSelected" v-on:change="onSelectedSource">
-				    <option value="">Data Source</option>
-				    <option v-for="source in sources" v-bind:value="source">
-					[[source]]
-				    </option>
-				</select>
-			    </div>
-			    <div class="field">
-				<label>Column</label>
-				<select class="ui fluid dropdown"
-					       v-model="columnSelected"
-					       v-on:change='onSelectedColumn'>
-				    <option value="">Column</option>
-				    <option v-for="col in currentColumns" v-bind:value="col">
-					[[col]]
-				    </option>
-				</select>
-			    </div>
-			    <div class="field">
-				<label>Value</label>
-				<div class="ui fluid search selection dropdown">
-				    <input type="hidden"
-					   v-model="valueSelected"
-					   v-on:change="valueSelected=$event.target.value">
-				    <i class="dropdown icon"></i>
-				    <div class="default text"></div>
-				    <div class="menu">
-					<div class="item" v-for="val in currentValues"
-					     v-bind:data-value="val">
-					    [[val]]
+			<div class="content has-background-white">
+			    <form v-bind:style="{display:displayMenu,padding:paddingMenu}">
+				<div class="field">
+				    <label>Data Source</label>
+				    <div class="control">
+					<div class="select">
+					    <select v-model="sourceSelected" v-on:change="onSelectedSource">
+						<option value="">Data Source</option>
+						<option v-for="source in sources" v-bind:value="source">
+						    [[source]]
+						</option>
+					    </select>
 					</div>
 				    </div>
 				</div>
-			    </div>
-			    <div class="ui mini blue right floated button" v-on:click="done">
-				<i class="check icon"></i>
-				Done
-			    </div>
-			</form>
+				<div class="field">
+				    <label>Column</label>
+				    <div class="control">
+					<div class="select">
+					    <select
+						v-model="columnSelected"
+						v-on:change='onSelectedColumn'>
+						<option value="">Column</option>
+						<option v-for="col in currentColumns" v-bind:value="col">
+						    [[col]]
+						</option>
+					    </select>
+					</div>
+				    </div>
+
+				</div>
+				<div class="field">
+				    <label>Value</label>
+				    <div class="control">
+					<div class="select">
+					    <select v-model="valueSelected">
+						<option v-bind:value="val" v-for="val in currentValues">
+						    [[val]]
+						</option>
+					    </select>
+					</div>
+				    </div>
+				</div>
+				<button class="button is-success" v-on:click="done">
+				    <i class="fas fa-check"></i>
+				    Done
+				</button>
+			    </form>
+			</div>
 			<br>
-			<br>
-			<div class="ui button" v-on:click="addCondition">
+			<button class="button is-link" v-on:click="addCondition">
 			    <i class="plus icon"></i>
 			    Add Condition
-			</div>
+			</button>
 		    </div>
-		    <div data-content="tooltips" id="tooltips">
-			<div class="header item">Tooltips</div>
-			<form class="ui form" v-for="(items,key) in headers" v-bind:id="key">
-			    <div class="field">
-				<label>[[key]]</label>
-				<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
-				    <input type="hidden"
+		    <div id="tooltips">
+																								<div class="header item">Tooltips</div>
+																								<form class="ui form" v-for="(items,key) in headers" v-bind:id="key">
+																								<div class="field">
+																									<label>[[key]]</label>
+																									<div class="ui fluid multiple selection dropdown" id="multi-tooltip">
+																									<input type="hidden"
 					   name="columns"
 					   v-model="tipSelected[key]"
 					   v-on:change="tipSelected[key]=$event.target.value">
-				    <i class="dropdown icon"></i>
-				    <div class="default text">Select columns as tooltips</div>
-				    <div class="menu">
-					<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
+																									<i class="dropdown icon"></i>
+																									<div class="default text">Select columns as tooltips</div>
+																									<div class="menu">
+																										<div class="item" v-for="col in items.columns" v-bind:data-value="col" v-bind:key="col">[[col]]</div>
 				    </div>
 				</div>
 			    </div>
-			    <div class="ui blue mini button right floated" v-on:click="done(key)" v-bind:key="key">
-				<i class="check icon"></i>
-				Update
+																								<div class="ui blue mini button right floated" v-on:click="done(key)" v-bind:key="key">
+																									<i class="check icon"></i>
+																									Update
 			    </div>
 			</form>
-		    </div>
+																    </div>
 		</div>
 	    </div>
 	    <div class="column">
@@ -208,8 +210,8 @@
 		    <div class="content">
 			<ul id="datasetOptions">
 			    <li v-for="dataset in datasets"
-				v-bind:key="dataset.id"
-				v-on:click="addToLayer(dataset)">
+				       v-bind:key="dataset.id"
+				       v-on:click="addToLayer(dataset)">
 				<a>
 				    [[dataset.name]]
 				</a>
@@ -230,8 +232,8 @@
 		    <div class="content">
 			<ul id="geoOptions">
 			    <li v-for="geo in geography"
-				       v-bind:key="geo.id"
-				       v-on:click="addToGeo(geo)">
+				v-bind:key="geo.id"
+				v-on:click="addToGeo(geo)">
 				<a>
 				    [[geo.name]]
 				</a>

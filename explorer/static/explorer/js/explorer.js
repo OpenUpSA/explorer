@@ -160,6 +160,48 @@ var datasetOptions = new Vue({
 });
 
 
+var tabs = new Vue({
+    el:"#tabs",
+    delimiters:["[[", "]]"],
+
+    methods:{
+	tabSwitch: function(tabName){
+	    console.log(tabName);
+	    if (tabName == 'layers'){
+		$('#layers').css("display","block");
+		$('#tab-layers').addClass('is-active');
+		
+		$('#filters').css("display","none");
+		$('#tab-filters').removeClass('is-active');
+		
+		$('#tooltips').css("display","none");
+		$('#tab-tooltips').removeClass('is-active');
+		
+	    }else if (tabName == 'filters'){
+		$('#layers').css("display","none");
+		$('#tab-layers').removeClass('is-active');
+		
+		$('#filters').css("display","block");
+		$('#tab-filters').addClass('is-active');
+		
+		$('#tooltips').css("display","none");
+		$('#tab-tooltips').removeClass('is-active');
+		
+	    }else if (tabName == 'tooltips'){
+		$('#layers').css("display","none");
+		$('#tab-layers').removeClass('is-active');
+		
+		$('#filters').css("display","none");
+		$('#tab-filters').removeClass('is-active');
+		
+		$('#tooltips').css("display","block");
+		$('#tab-tooltips').addClass('is-active');
+		
+	    }
+	}
+    }
+    
+});
 
 //show the choosen datasets
 var layers = new Vue({
@@ -278,6 +320,7 @@ var filters = new Vue({
      delimiters: ["[[","]]"],
     data:{
 	displayMenu: 'none',
+	paddingMenu: '5px',
 	conditions:{},
 	columns: {},
 	sources: [],
@@ -346,14 +389,6 @@ var filters = new Vue({
 });
 
 $(document).ready(function(){
-    $('#tabs li').on('click', function(){
-	var tab = $(this).data('tab');
-	$('#tabs li').removeClass('is-active');
-	$(this).addClass('is-active');
-
-	$('#tab-content div').removeClass('is-active');
-	$('div[data-content="'+ tab + '"]').addClass('is-active');
-    });
     $('.modal-close').on('click',function(){
 	$('.modal').removeClass('is-active');
     });
