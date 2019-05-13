@@ -21,7 +21,7 @@ class DatasetView(APIView):
 
 class DatasetsView(APIView):
     def get(self, request):
-        query = Dataset.objects.all()
+        query = Dataset.objects.filter(approved=True)
         serializer = DatasetsSerializer(query, many=True)
         return JsonResponse(serializer.data, safe=False)
 

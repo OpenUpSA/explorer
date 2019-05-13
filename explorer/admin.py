@@ -1,7 +1,11 @@
+import geopandas
+import json
+
 from django.contrib import admin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf.urls import url
+from django.utils.safestring import mark_safe
 
 from .models import Dataset, Geography
 from .forms import ExplorerImportForm
@@ -10,6 +14,20 @@ from .process import import_csv
 
 class ExplorerAdmin(admin.ModelAdmin):
     change_list_template = 'explorer/explorer_changelist.djhtml'
+    list_display = ['name', 'version', 'source', 'approved']
+    readonly_fields = ['data_extract']
+
+    def html_data(self, obj):
+        data = json.dumps(obj)
+        dataframe = geopandas.read_file(data)
+        table = dataframe.head().to_html()
+        return table
+
+    def data_extract(self, obj):
+        """
+        Show some data from the dataset
+        """
+        return mark_safe(self.html_data(obj.data))
 
     def import_csv_dataset(self, request):
         if request.method == 'POST' and request.is_ajax():
@@ -17,8 +35,9 @@ class ExplorerAdmin(admin.ModelAdmin):
             if form.is_valid():
                 name = form.cleaned_data['name']
                 csv_file = request.FILES['csv_file']
+                version = form.cleaned_data['version']
                 try:
-                    import_csv(name, csv_file)
+                    import_csv(name, csv_file, version, request.user)
                     return JsonResponse({
                         'status': 'ok',
                     })

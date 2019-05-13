@@ -10,12 +10,12 @@ install_requires = [
     'Django>=1.11.20,<2.0.0', 'django-leaflet>=0.24.0',
     'djangorestframework>=3.9.1', 'geojson>=2.4.1', 'numpy>=1.16.1',
     'pandas>=0.24.1', 'psycopg2>=2.7.7', 'python-dateutil>=2.8.0',
-    'pytz>=2018.9', 'six==1.12.0'
+    'pytz>=2018.9', 'six==1.12.0', 'geopandas==0.5.0'
 ]
 
 setup(
     name='explorer',
-    version='0.3',
+    version='0.4',
     packages=find_packages(exclude=['project']),
     include_package_data=True,
     install_requires=install_requires,

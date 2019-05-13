@@ -3,9 +3,11 @@ from .models import Dataset, Geography
 
 
 class DatasetsSerializer(serializers.ModelSerializer):
+    source = serializers.StringRelatedField()
+    
     class Meta:
         model = Dataset
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'version', 'source')
 
 
 class DatasetSerializer(serializers.ModelSerializer):
@@ -28,4 +30,4 @@ class GeographySerializer(serializers.ModelSerializer):
 class GeographysSerializer(serializers.ModelSerializer):
     class Meta:
         model = Geography
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'version', 'source')

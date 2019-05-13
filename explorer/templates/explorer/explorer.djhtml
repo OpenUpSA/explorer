@@ -25,7 +25,7 @@
 	 }
 	</style>
 	<div class="ui visible white sidebar vertical menu">
-	    <h3> Explorer <small>v0.3</small></h3>
+	    <h3> Explorer <small>v0.4</small></h3>
 	    <div class="ui secondary menu borderless">
 		<a class="popup item active" data-tab="layers" data-content="Dataset Layers">
 		    <i class="bars icon"></i>
@@ -189,14 +189,26 @@
 	<div class="ui dataset modal">
 	    <div class="header">Select a Dataset Layer</div>
 	    <div class="content">
-		<div class="ui massive list" id="datasetOptions">
-		    <a class="item"
-		       v-for="dataset in datasets"
-		       v-bind:key="dataset.id"
-		       v-on:click="addToLayer(dataset)">
-			[[dataset.name]]
-		    </a>
+		<table class="ui selectable celled table" id="datasetOptions">
+		    <thead>
+			<tr>
+			    <th>Dataset</th>
+			    <th>Version</th>
+			    <th>Source</th>
+			</tr>
+		    </thead>
+		    <tbody>
+			<tr v-for="dataset in datasets"
+			    v-bind:key="dataset.id"
+			    v-on:click="addToLayer(dataset)">
+			    
+			    <td><a>[[dataset.name]]</a></td>
+			    <td>[[dataset.version]]</td>
+			    <td>[[dataset.source]]</td>
+			</tr>
+		    </tbody>
 		</div>
+		
 	    </div>
 	</div>
 	<div class="ui geography modal">

@@ -62,11 +62,13 @@ var samap = new Vue({
 			    table = table + endtable;   
 			}
 			else{
+			    var name = feature.properties.name;
+			    var point_name = "<tr><td><b>Name</b></td><td>" + name + '</td></tr>';
 			    var longitude = feature.geometry.coordinates[0];
 			    var latitude = feature.geometry.coordinates[1];
 			    var lat = "<tr><td><b>Latitude</b></td><td>" + latitude + '</td></tr>';
 			    var lng = "<tr><td><b>Longitude</b></td><td>" + longitude + '</td></tr>';
-			    table = table + lat + lng;
+			    table = table + point_name + lat + lng;
 			}
 			header = header + table;
 			layer.bindTooltip(header).openTooltip();
@@ -180,8 +182,7 @@ var layers = new Vue({
     methods:{
 	fetchDataset: function(){
 	    $('.ui.dataset.modal').modal('show');
-	    if (datasetOptions.datasets.length == 0){
-		$.ajax({
+	    $.ajax({
 		    dataType:"json",
 		    url: "api/v1/datasets",
 		    method: "GET",
@@ -192,7 +193,6 @@ var layers = new Vue({
 			console.log("We cant find anything here");
 		    }
 		});
-	    }
 	},
 	fetchGeography: function(){
 	    $('.ui.geography.modal').modal('show');
