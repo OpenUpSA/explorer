@@ -22,43 +22,54 @@
 
 
 {% block content %}
-    <div class="ui two column centered grid">
-	<div class="ui card">
-	    <div class="content">
-		<div class="header">Upload CSV Dataset</div>
-	    </div>
-	    <div class="content">
-		<div class="ui info message">
-		    <div class="header">Info</div>
-		    <ul>
-			<li>Only .csv files are supported</li>
-			<li>Make sure Latitude/Longitude column headers are written as such</li>
-		    </ul>
+    <div class="ui container">
+	<div class="row">
+	    {% if form.errors %}
+		<div class="ui error message">
+		    <div class="header">Unable to Upload CSV</div>
+		    <p>
+			{% for field, message in form.errors.items %}
+			    {{message}}
+			{% endfor %}
+		    </p>
 		</div>
-		<div class="ui negative message" style="display:none">
-		    <i class="close icon"></i>
-		    <div class="header">
-			Error Uploading Csv
-		    </div>
-		    <div id="errorDetail"></div>
-		</div>
-		<div class="ui positive message" style="display:none">
-		    <i class="close icon"></i>
-		    <div class="header">
-			Dataset Uploaded!
-		    </div>
-		</div>
+	    {% endif %}
+	</div>
+	<div class="row" style="border-style: solid;border-width:1px;padding:100px;">
+	    <h2 class="ui header center aligned">Upload CSV Dataset</h2>
+	    <div class="ui info message">
+		<div class="header">Info</div>
+		<ul>
+		    <li>Only .csv files are supported</li>
+		    <li>The csv file must contain the following fields (Name, Latitude, Longitude)</li>
+		</ul>
 	    </div>
 	    <form class="ui form" id="explorer_import_form" action="{{request.path}}" method="POST" enctype="multipart/form-data">
 		<div class="content">
 		    {% csrf_token %}
 		    {{ form.as_p }}
 		</div>
-		<div class="extra-content">
+		<div class="row">
 		    <button type="submit" class="ui primary button">Upload Dataset</button>
+		</div>
+		<br>
+		<div class="row">
 		    <div class="loader center aligned" style="display:none"></div>
 		</div>
 	    </form>
+	    <div class="ui negative message" style="display:none">
+		<i class="close icon"></i>
+		<div class="header">
+		    Error Uploading Csv
+		</div>
+		<div id="errorDetail"></div>
+	    </div>
+	    <div class="ui positive message" style="display:none">
+		<i class="close icon"></i>
+		<div class="header">
+		    Dataset Uploaded!
+		</div>
+	    </div>
 	</div>
     </div>
 {% endblock %}
