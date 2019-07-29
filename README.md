@@ -52,6 +52,12 @@ Install
 6. Make sure the admin app is enabled.
 
 
+API
+---------------------
+
+Explorer has got and api endpoint located ```/explorer/docs```
+
+
 
 Layers
 -------
