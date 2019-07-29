@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField, JSONField
-from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
 
 
 class Dataset(models.Model):
