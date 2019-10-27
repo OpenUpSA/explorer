@@ -4,10 +4,18 @@ from django.shortcuts import render
 from django.conf.urls import url
 
 
-from .models import Dataset
+from .models import Dataset, Category, Location
 from .forms import ExplorerImportForm
 from .process import import_csv
 
+class CategoryAdmin(admin.ModelAdmin):
+    pass
+
+class LocationAdmin(admin.ModelAdmin):
+    list_filter = ('category',)
+
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Location, LocationAdmin)
 
 class ExplorerAdmin(admin.ModelAdmin):
     change_list_template = "explorer/explorer_changelist.djhtml"
