@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .models import Dataset, Location, Category
-from .serializer import DatasetSerializer, DatasetsSerializer, CategorySerializer, CategoriesSerializer, LocationsSerializer, LocationSerializer
+from .serializer import DatasetSerializer, DatasetsSerializer, CategorySerializer, CategoriesSerializer
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -44,9 +44,9 @@ class DatasetsView(APIView):
 
 class CategoryView(APIView):
     def get(self, request, id):
-        query = get_object_or_404(Category, id=id)
-        serializer = CategorySerializer(query)
-        return JsonResponse(serializer.data)
+        category = get_object_or_404(Category, id=id)
+        sr = CategorySerializer()
+        return JsonResponse(sr.to_representation(category))
 
 class CategoriesView(APIView):
     def get(self, request):

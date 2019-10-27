@@ -1,7 +1,7 @@
 from django.contrib.gis.geos import Point
 
 from rest_framework import serializers
-from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField
+from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField, GeoFeatureModelListSerializer
 from .models import Dataset, Location, Category
 
 
@@ -41,13 +41,6 @@ class LocationSerializer(GeoFeatureModelSerializer):
         model = Location
         geo_field = 'coordinates'
         fields = "__all__"
-
-class LocationsSerializer(serializers.Serializer):
-    locations = LocationSerializer(many=True)
-
-    class Meta:
-        fields = ('locations', )
-
 
 class CategorySerializer(serializers.Serializer):
     name = serializers.CharField(max_length=200)
