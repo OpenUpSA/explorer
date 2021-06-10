@@ -7,7 +7,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 install_requires = [
-    "Django>=1.11.20,<2.0.0",
+    "Django>=1.11.20,<3.0.0",
     "django-leaflet>=0.24.0",
     "djangorestframework>=3.9.1",
     "geojson>=2.4.1",
